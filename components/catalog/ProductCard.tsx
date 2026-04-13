@@ -5,7 +5,7 @@ import { formatPrice } from '@/lib/filters'
 import StockBadge from '@/components/catalog/StockBadge'
 import { clsx } from 'clsx'
 import { BranchKey, Product } from '@/types/products'
-import WhatsAppButton from '../ui/WhatsappButton'
+import WhatsAppButton from '../ui/WhatsAppButton'
 
 // ============================================================
 // ProductCard
