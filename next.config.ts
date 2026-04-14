@@ -2,8 +2,13 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   images: {
-    // Tambahkan domain eksternal jika foto produk dari CDN/CMS
-    remotePatterns: [],
+    // Domain eksternal untuk image source (Unsplash)
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+    ],
     // Format modern untuk performa lebih baik
     formats: ['image/avif', 'image/webp'],
   },

@@ -1,6 +1,17 @@
 import { FilterOptions, Product } from "@/types/products"
 
-export const PRODUCTS: Product[] = [
+const UNSPLASH_IMAGES: Record<Product['category'], string> = {
+  iphone:
+    'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=1200&q=80',
+  ipad:
+    'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=1200&q=80',
+  macbook:
+    'https://images.unsplash.com/photo-1517336714739-489689fd1ca8?auto=format&fit=crop&w=1200&q=80',
+  accessories:
+    'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1200&q=80',
+}
+
+const BASE_PRODUCTS: Product[] = [
   // ── iPhone 16 Series ─────────────────────────────────────
   {
     id: 'iph-16-128-black-baru',
@@ -281,6 +292,11 @@ export const PRODUCTS: Product[] = [
     stock: { gresik: 10, tuban: 8 },
   },
 ]
+
+export const PRODUCTS: Product[] = BASE_PRODUCTS.map((product): Product => ({
+  ...product,
+  image: UNSPLASH_IMAGES[product.category],
+}))
 
 // ============================================================
 // HELPERS
