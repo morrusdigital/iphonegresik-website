@@ -109,7 +109,11 @@ export default async function KategoriPage({
       </div>
 
       {/* Grid dengan filter — Client Component */}
-      <ProductGrid initialProducts={products} />
+      <ProductGrid
+        initialProducts={products}
+        initialCategory={category}
+        navigateByCategory
+      />
     </div>
   )
 }
