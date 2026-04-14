@@ -22,7 +22,7 @@ export default function ProductCard({ product, activeBranchKey }: ProductCardPro
       'transition-all duration-250 hover:border-blue-200 hover:-translate-y-1',
       'hover:shadow-[0_16px_40px_rgba(59,130,246,0.1)]'
     )}>
-      <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-[#f8faff] to-[#f0f4ff]">
+      <div className="relative aspect-square overflow-hidden bg-linear-to-br from-[#f8faff] to-[#f0f4ff]">
         <Image
           src={product.image} alt={product.name} fill
           sizes="(max-width:640px) 50vw,(max-width:1024px) 33vw,25vw"
@@ -38,7 +38,7 @@ export default function ProductCard({ product, activeBranchKey }: ProductCardPro
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col p-[14px] gap-2.5">
+      <div className="flex flex-1 flex-col p-3.5 gap-2.5">
         <div>
           <h3 className="text-[13px] font-extrabold text-gray-900 leading-tight">{product.name}</h3>
           <p className="text-[10px] font-semibold text-gray-400 mt-0.5">

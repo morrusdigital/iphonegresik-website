@@ -23,15 +23,15 @@ export default function CategoryHighlight() {
           const count = getProductsByCategory(cat.key).length
           return (
             <Link key={cat.key} href={cat.href}
-              className={`group relative flex flex-col justify-between rounded-[22px] ${cat.color} p-[22px] min-h-[180px] overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-xl`}>
+              className={`group relative flex flex-col justify-between rounded-[22px] ${cat.color} p-5.5 min-h-45 overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-xl`}>
               {/* top shimmer */}
-              <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
+              <div className="absolute top-0 inset-x-0 h-px bg-linear-to-r from-transparent via-white/25 to-transparent" />
               {/* blobs */}
               <div className="absolute -bottom-8 -right-8 w-28 h-28 rounded-full bg-white/10 pointer-events-none" />
-              <div className="absolute -bottom-3 -right-3 w-16 h-16 rounded-full bg-white/[.13] pointer-events-none" />
+              <div className="absolute -bottom-3 -right-3 w-16 h-16 rounded-full bg-white/13 pointer-events-none" />
 
               {/* icon */}
-              <div className="relative z-10 w-11 h-11 rounded-[12px] bg-white/20 flex items-center justify-center text-[20px]">
+              <div className="relative z-10 w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center text-[20px]">
                 {cat.icon}
               </div>
 

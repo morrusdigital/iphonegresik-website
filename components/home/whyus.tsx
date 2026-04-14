@@ -23,7 +23,7 @@ const ITEMS = [
 
 export default function WhyUs() {
   return (
-    <section className="rounded-[24px] bg-white border border-gray-100 p-9">
+    <section className="rounded-3xl bg-white border border-gray-100 p-9">
       <div className="mb-6">
         <p className="text-[11px] font-extrabold uppercase tracking-[.15em] text-blue-500 mb-1">✦ Kenapa pilih kami</p>
         <h2 className="text-[26px] font-black text-gray-950 tracking-tight">Belanja Tenang, Barang Terjamin</h2>
@@ -31,7 +31,7 @@ export default function WhyUs() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {ITEMS.map(item => (
           <div key={item.title} className="bg-[#f8f9ff] rounded-2xl p-5 flex flex-col gap-3">
-            <div className={`w-11 h-11 ${item.iconBg} rounded-[12px] flex items-center justify-center text-[20px]`}>
+            <div className={`w-11 h-11 ${item.iconBg} rounded-xl flex items-center justify-center text-[20px]`}>
               {item.icon}
             </div>
             <div>

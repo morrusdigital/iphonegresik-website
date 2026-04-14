@@ -2,12 +2,12 @@ import Link from 'next/link'
 
 export default function HeroBanner() {
   return (
-    <section className="relative overflow-hidden rounded-[28px] min-h-[460px] grid grid-cols-1 lg:grid-cols-[1fr_360px] items-end bg-[#0d0d0d]">
+    <section className="relative overflow-hidden rounded-[28px] min-h-115 grid grid-cols-1 lg:grid-cols-[1fr_360px] items-end bg-[#0d0d0d]">
 
       {/* Ambient glows */}
-      <div className="absolute top-0 right-20 w-[400px] h-[400px] rounded-full pointer-events-none"
+      <div className="absolute top-0 right-20 w-100 h-100 rounded-full pointer-events-none"
         style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.13) 0%, transparent 70%)' }} />
-      <div className="absolute bottom-0 left-10 w-[300px] h-[300px] rounded-full pointer-events-none"
+      <div className="absolute bottom-0 left-10 w-75 h-75 rounded-full pointer-events-none"
         style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%)' }} />
 
       {/* Left: Content */}
@@ -29,13 +29,13 @@ export default function HeroBanner() {
         {/* Headline */}
         <h1 className="text-[52px] font-black leading-[1.03] tracking-[-2px] text-white mb-5">
           Apple.<br />
-          <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
             Ori. Garansi.
           </span><br />
           Gresik.
         </h1>
 
-        <p className="text-[15px] text-white/40 leading-[1.75] mb-9 max-w-[380px]">
+        <p className="text-[15px] text-white/40 leading-[1.75] mb-9 max-w-95">
           iPhone, iPad, Mac &amp; Aksesoris 100% original bergaransi resmi Apple.
           Stok live, harga transparan, order via WhatsApp kapan saja.
         </p>
@@ -59,7 +59,7 @@ export default function HeroBanner() {
         <div className="flex gap-5 flex-wrap">
           {['Garansi Apple Resmi', '2 Cabang Siap Melayani', 'WA Fast Response'].map(t => (
             <div key={t} className="flex items-center gap-2">
-              <div className="w-[18px] h-[18px] rounded-full flex items-center justify-center shrink-0"
+              <div className="w-4.5 h-4.5 rounded-full flex items-center justify-center shrink-0"
                 style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)' }}>
                 <svg width="9" height="9" viewBox="0 0 12 12" fill="#22c55e" aria-hidden="true">
                   <path fillRule="evenodd" d="M10.354 2.354a.5.5 0 010 .707L5 8.414 2.646 6.061a.5.5 0 11.707-.707L5 7l4.646-4.646a.5.5 0 01.708 0z"/>
@@ -75,11 +75,11 @@ export default function HeroBanner() {
       <div className="hidden lg:flex items-end justify-center relative z-10 pb-0 pr-8">
         <div className="relative">
           {/* Phone */}
-          <div className="w-[180px] h-[340px] rounded-[44px] bg-[#1a1a2e] border-[6px] border-[#2a2a3e] relative overflow-hidden shadow-2xl"
+          <div className="w-45 h-85 rounded-[44px] bg-[#1a1a2e] border-[6px] border-[#2a2a3e] relative overflow-hidden shadow-2xl"
             style={{ boxShadow: '0 40px 80px rgba(0,0,0,0.5)' }}>
-            <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a5f] via-[#0f172a] to-[#1a1a2e]" />
-            <div className="absolute top-3.5 left-1/2 -translate-x-1/2 w-14 h-5 bg-[#0d0d0d] rounded-full z-10" />
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 z-[2]">
+            <div className="absolute inset-0 bg-linear-to-br from-[#1e3a5f] via-[#0f172a] to-[#1a1a2e]" />
+            <div className="absolute top-3.5 left-1/2 -translate-x-1/2 w-3.5 h-1.25 bg-[#0d0d0d] rounded-full z-10" />
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5 z-2">
               <span className="text-[32px]">🍎</span>
               <span className="text-[10px] font-black text-white tracking-widest uppercase">iPhone 16 Pro</span>
               <span className="text-[9px] font-semibold text-white/40">Natural Titanium</span>
