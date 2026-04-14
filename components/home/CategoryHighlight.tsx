@@ -2,79 +2,51 @@ import Link from 'next/link'
 import type { Category } from '@/types/products'
 import { getProductsByCategory } from '@/data/products'
 
-// ============================================================
-// CategoryHighlight
-// Grid 4 kategori di beranda — Server Component
-// ============================================================
-
-const CATEGORIES: {
-  key: Category
-  label: string
-  description: string
-  href: string
-  bg: string
-}[] = [
-  {
-    key: 'iphone',
-    label: 'iPhone',
-    description: 'Series terbaru, ready stock',
-    href: '/kategori/iphone',
-    bg: 'bg-blue-50 hover:bg-blue-100',
-  },
-  {
-    key: 'ipad',
-    label: 'iPad',
-    description: 'Air, Pro, dan Gen 10',
-    href: '/kategori/ipad',
-    bg: 'bg-purple-50 hover:bg-purple-100',
-  },
-  {
-    key: 'macbook',
-    label: 'Mac',
-    description: 'MacBook Air & Pro M3',
-    href: '/kategori/mac',
-    bg: 'bg-gray-100 hover:bg-gray-200',
-  },
-  {
-    key: 'accessories',
-    label: 'Aksesoris',
-    description: 'AirPods, Apple Watch & more',
-    href: '/kategori/aksesoris',
-    bg: 'bg-green-50 hover:bg-green-100',
-  },
+const CATS: { key: Category; label: string; desc: string; href: string; color: string; icon: string }[] = [
+  { key: 'iphone',      label: 'iPhone',    desc: 'Series terbaru, ready stock',     href: '/kategori/iphone',    color: 'bg-[#0d0d0d]',  icon: '📱' },
+  { key: 'ipad',        label: 'iPad',      desc: 'Air, Pro, dan Gen 10',            href: '/kategori/ipad',      color: 'bg-violet-600', icon: '🖥️' },
+  { key: 'macbook',     label: 'Mac',       desc: 'MacBook Air & Pro M3',            href: '/kategori/mac',       color: 'bg-sky-500',    icon: '💻' },
+  { key: 'accessories', label: 'Aksesoris', desc: 'AirPods, Watch & more',           href: '/kategori/aksesoris', color: 'bg-emerald-500', icon: '🎧' },
 ]
 
 export default function CategoryHighlight() {
   return (
     <section className="space-y-5">
       <div>
-        <h2 className="text-xl font-bold text-gray-900">Kategori</h2>
-        <p className="mt-0.5 text-sm text-gray-500">Temukan produk yang kamu butuhkan</p>
+        <p className="text-[11px] font-extrabold uppercase tracking-[.15em] text-blue-500 mb-1">✦ Jelajahi semua</p>
+        <h2 className="text-[26px] font-black text-gray-950 tracking-tight">Kategori Produk</h2>
+        <p className="text-[13px] text-gray-400 mt-0.5">Dari iPhone sampai aksesoris, semuanya ada</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {CATEGORIES.map((cat) => {
-          const products = getProductsByCategory(cat.key)
-          const count = products.length
-
+        {CATS.map(cat => {
+          const count = getProductsByCategory(cat.key).length
           return (
-            <Link
-              key={cat.key}
-              href={cat.href}
-              className={`group rounded-2xl p-5 transition-colors ${cat.bg}`}
-            >
-              <div className="space-y-1">
-                <p className="text-base font-bold text-gray-900">{cat.label}</p>
-                <p className="text-xs text-gray-500">{cat.description}</p>
-                <p className="text-xs font-medium text-gray-400">
-                  {count} produk
-                </p>
+            <Link key={cat.key} href={cat.href}
+              className={`group relative flex flex-col justify-between rounded-[22px] ${cat.color} p-[22px] min-h-[180px] overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-xl`}>
+              {/* top shimmer */}
+              <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
+              {/* blobs */}
+              <div className="absolute -bottom-8 -right-8 w-28 h-28 rounded-full bg-white/10 pointer-events-none" />
+              <div className="absolute -bottom-3 -right-3 w-16 h-16 rounded-full bg-white/[.13] pointer-events-none" />
+
+              {/* icon */}
+              <div className="relative z-10 w-11 h-11 rounded-[12px] bg-white/20 flex items-center justify-center text-[20px]">
+                {cat.icon}
               </div>
-              <div className="mt-3 flex items-center gap-1 text-xs font-medium text-gray-600 group-hover:text-gray-900 transition-colors">
-                Lihat semua
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3" aria-hidden="true">
-                  <path fillRule="evenodd" d="M2 8a.75.75 0 01.75-.75h8.69L8.22 4.03a.75.75 0 011.06-1.06l4.5 4.25a.75.75 0 010 1.06l-4.5 4.25a.75.75 0 01-1.06-1.06l3.22-3.22H2.75A.75.75 0 012 8z" clipRule="evenodd" />
-                </svg>
+
+              {/* text */}
+              <div className="relative z-10">
+                <p className="text-[18px] font-black text-white tracking-tight">{cat.label}</p>
+                <p className="text-[11px] text-white/60 font-semibold mt-0.5">{cat.desc}</p>
+              </div>
+
+              {/* footer */}
+              <div className="relative z-10 flex items-center justify-between mt-4">
+                <span className="text-[10px] font-extrabold text-white/80 bg-white/20 rounded-full px-3 py-1">
+                  {count} produk
+                </span>
+                <span className="text-white/70 text-base font-black transition-transform group-hover:translate-x-1">→</span>
               </div>
             </Link>
           )
