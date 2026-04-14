@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import type { Product, Category, BranchKey } from '@/types/products'
 import { useFilters } from '@/hooks/useFilters'
 import { useBranch } from '@/hooks/useBranch'
@@ -18,11 +19,32 @@ import { clsx } from 'clsx'
 
 interface ProductGridProps {
   initialProducts: Product[]
+  initialCategory?: Category | 'semua'
+  navigateByCategory?: boolean
 }
 
-export default function ProductGrid({ initialProducts }: ProductGridProps) {
-  const [activeCategory, setActiveCategory] = useState<Category | 'semua'>('semua')
+const CATEGORY_ROUTE_MAP: Record<Category, string> = {
+  iphone: 'iphone',
+  ipad: 'ipad',
+  macbook: 'mac',
+  accessories: 'aksesoris',
+}
+
+export default function ProductGrid({
+  initialProducts,
+  initialCategory = 'semua',
+  navigateByCategory = false,
+}: ProductGridProps) {
+  const router = useRouter()
+  const [localCategory, setLocalCategory] = useState<Category | 'semua'>(initialCategory)
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+
+  // Sinkronkan tab aktif setiap kali kategori dari route berubah.
+  useEffect(() => {
+    setLocalCategory(initialCategory)
+  }, [initialCategory])
+
+  const activeCategory = navigateByCategory ? initialCategory : localCategory
 
   // Hook cabang
   const { activeBranchKey, branches, setBranch } = useBranch('gresik')
@@ -53,7 +75,17 @@ export default function ProductGrid({ initialProducts }: ProductGridProps) {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <CategoryTabs
           activeCategory={activeCategory}
-          onChange={(cat) => { setActiveCategory(cat); resetFilters() }}
+          onChange={(cat) => {
+            resetFilters()
+
+            if (navigateByCategory) {
+              if (cat === activeCategory) return
+              router.push(cat === 'semua' ? '/katalog' : `/kategori/${CATEGORY_ROUTE_MAP[cat]}`)
+              return
+            }
+
+            setLocalCategory(cat)
+          }}
         />
         <BranchDropdown
           branches={branches}
