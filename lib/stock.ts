@@ -1,12 +1,23 @@
-import { BranchKey, StockPerBranch, StockStatus } from "@/types/products"
+import { BranchKey, StockPerBranch, StockStatus } from '@/types/products'
 
-export function getStockStatus(qty: number): StockStatus {
-  if (qty >= 3) return 'Ready'
-  if (qty >= 1) return 'terbatas'
-  return 'indent'
+export const STOCK_STATUS_LABELS: Record<StockStatus, string> = {
+  'ready-sekarang': 'Ready sekarang',
+  'tersisa-2': 'Tersisa 2',
+  'tersisa-1': 'Tersisa 1',
+  kosong: 'Kosong',
 }
 
-/** Ambil status stok untuk cabang tertentu */
+export function getStockStatus(qty: number): StockStatus {
+  if (qty >= 3) return 'ready-sekarang'
+  if (qty === 2) return 'tersisa-2'
+  if (qty === 1) return 'tersisa-1'
+  return 'kosong'
+}
+
+export function getStockLabel(qty: number): string {
+  return STOCK_STATUS_LABELS[getStockStatus(qty)]
+}
+
 export function getStockStatusByBranch(
   stock: StockPerBranch,
   branch: BranchKey
@@ -14,7 +25,6 @@ export function getStockStatusByBranch(
   return getStockStatus(stock[branch])
 }
 
-/** Ambil status stok semua cabang sekaligus */
 export function getAllStockStatuses(stock: StockPerBranch): Record<BranchKey, StockStatus> {
   return {
     gresik: getStockStatus(stock.gresik),
@@ -22,18 +32,33 @@ export function getAllStockStatuses(stock: StockPerBranch): Record<BranchKey, St
   }
 }
 
+export function hasStockInBranch(stock: StockPerBranch, branch: BranchKey): boolean {
+  return stock[branch] > 0
+}
 
-export type StockBadgeVariant = 'success' | 'warning' | 'danger'
+export function hasAnyStock(stock: StockPerBranch): boolean {
+  return stock.gresik > 0 || stock.tuban > 0
+}
+
+export function getTotalStock(stock: StockPerBranch): number {
+  return stock.gresik + stock.tuban
+}
+
+export type StockBadgeVariant = 'success' | 'warning' | 'danger' | 'muted'
 
 export function getStockBadgeVariant(status: StockStatus): StockBadgeVariant {
   switch (status) {
-    case 'Ready':    return 'success'
-    case 'terbatas': return 'warning'
-    case 'indent':   return 'danger'
+    case 'ready-sekarang':
+      return 'success'
+    case 'tersisa-2':
+      return 'warning'
+    case 'tersisa-1':
+      return 'warning'
+    case 'kosong':
+      return 'muted'
   }
 }
 
-/** Helper gabungan — langsung dari qty ke variant badge */
 export function getStockBadgeVariantFromQty(qty: number): StockBadgeVariant {
   return getStockBadgeVariant(getStockStatus(qty))
 }

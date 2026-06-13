@@ -1,46 +1,39 @@
-import { getStockBadgeVariant } from '@/lib/stock'
-import { StockStatus } from '@/types/products'
+import { getStockBadgeVariant, getStockLabel, getStockStatus } from '@/lib/stock'
 import { clsx } from 'clsx'
 
-// ============================================================
-// StockBadge
-// Menampilkan status stok: Ready / Terbatas / Indent
-// ============================================================
-
 interface StockBadgeProps {
-  status: StockStatus
-  qty?: number       // opsional, tampilkan angka stok
+  qty: number
   size?: 'sm' | 'md'
 }
 
-const variantStyles: Record<ReturnType<typeof getStockBadgeVariant>, string> = {
+const variantStyles = {
   success: 'bg-green-100 text-green-800 border border-green-200',
-  warning: 'bg-yellow-100 text-yellow-800 border border-yellow-200',
-  danger:  'bg-red-100   text-red-700   border border-red-200',
+  warning: 'bg-amber-100 text-amber-800 border border-amber-200',
+  danger: 'bg-red-100 text-red-700 border border-red-200',
+  muted: 'bg-gray-100 text-gray-500 border border-gray-200',
 }
 
-const dotStyles: Record<ReturnType<typeof getStockBadgeVariant>, string> = {
+const dotStyles = {
   success: 'bg-green-500',
-  warning: 'bg-yellow-500',
-  danger:  'bg-red-400',
+  warning: 'bg-amber-500',
+  danger: 'bg-red-400',
+  muted: 'bg-gray-400',
 }
 
-export default function StockBadge({ status, qty, size = 'md' }: StockBadgeProps) {
-  const variant = getStockBadgeVariant(status)
+export default function StockBadge({ qty, size = 'md' }: StockBadgeProps) {
+  const label = getStockLabel(qty)
+  const variant = getStockBadgeVariant(getStockStatus(qty))
 
   return (
     <span
       className={clsx(
-        'inline-flex items-center gap-1.5 rounded-full font-medium',
-        size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-2.5 py-1 text-xs',
+        'inline-flex items-center gap-1.5 rounded-full font-semibold',
+        size === 'sm' ? 'px-2 py-0.5 text-[10px]' : 'px-2.5 py-1 text-xs',
         variantStyles[variant]
       )}
     >
       <span className={clsx('h-1.5 w-1.5 rounded-full', dotStyles[variant])} />
-      {status}
-      {qty !== undefined && (
-        <span className="opacity-60">({qty})</span>
-      )}
+      {label}
     </span>
   )
 }

@@ -1,30 +1,35 @@
 'use client'
 
 import { useState, useMemo, useCallback } from 'react'
-import { filterProducts, sortProducts, countActiveFilters, hasActiveFilters, SortOption } from '@/lib/filters'
+import {
+  filterProducts,
+  sortProducts,
+  countActiveFilters,
+  hasActiveFilters,
+  getActiveFilterChips,
+  SortOption,
+} from '@/lib/filters'
 import { getFilterOptions } from '@/data/products'
 import { DEFAULT_FILTER_STATE, FilterState, Product } from '@/types/products'
 
 interface UseFiltersOptions {
   initialProducts: Product[]
   initialSort?: SortOption
+  initialFilters?: Partial<FilterState>
 }
 
 interface UseFiltersReturn {
-  // State
   filters: FilterState
   sort: SortOption
-  // Hasil
   filteredProducts: Product[]
   totalFiltered: number
   totalAll: number
-  // Filter options (untuk populate dropdown)
   filterOptions: ReturnType<typeof getFilterOptions>
-  // Actions
+  activeChips: ReturnType<typeof getActiveFilterChips>
   setFilter: <K extends keyof FilterState>(key: K, value: FilterState[K]) => void
   setSort: (sort: SortOption) => void
   resetFilters: () => void
-  // Info
+  removeFilter: (key: keyof FilterState) => void
   activeFilterCount: number
   isFiltered: boolean
 }
@@ -32,23 +37,24 @@ interface UseFiltersReturn {
 export function useFilters({
   initialProducts,
   initialSort = 'harga-asc',
+  initialFilters,
 }: UseFiltersOptions): UseFiltersReturn {
-  const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTER_STATE)
+  const [filters, setFilters] = useState<FilterState>({
+    ...DEFAULT_FILTER_STATE,
+    ...initialFilters,
+  })
   const [sort, setSort] = useState<SortOption>(initialSort)
 
-  // Filter options digenerate sekali dari produk awal
   const filterOptions = useMemo(
     () => getFilterOptions(initialProducts),
     [initialProducts]
   )
 
-  // Hasil produk setelah filter + sort — hanya recompute kalau filter/sort berubah
   const filteredProducts = useMemo(() => {
     const filtered = filterProducts(initialProducts, filters)
     return sortProducts(filtered, sort)
   }, [initialProducts, filters, sort])
 
-  // Set satu field filter tanpa reset yang lain
   const setFilter = useCallback(
     <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
       setFilters((prev) => ({ ...prev, [key]: value }))
@@ -56,10 +62,20 @@ export function useFilters({
     []
   )
 
-  // Reset semua filter ke default
-  const resetFilters = useCallback(() => {
-    setFilters(DEFAULT_FILTER_STATE)
+  const removeFilter = useCallback((key: keyof FilterState) => {
+    setFilters((prev) => {
+      const next = { ...prev }
+      if (key === 'readyOnly') next.readyOnly = false
+      else if (key === 'priceMin') next.priceMin = 0
+      else if (key === 'priceMax') next.priceMax = 0
+      else (next[key] as string) = ''
+      return next
+    })
   }, [])
+
+  const resetFilters = useCallback(() => {
+    setFilters({ ...DEFAULT_FILTER_STATE, ...initialFilters })
+  }, [initialFilters])
 
   return {
     filters,
@@ -68,9 +84,11 @@ export function useFilters({
     totalFiltered: filteredProducts.length,
     totalAll: initialProducts.length,
     filterOptions,
+    activeChips: getActiveFilterChips(filters),
     setFilter,
     setSort,
     resetFilters,
+    removeFilter,
     activeFilterCount: countActiveFilters(filters),
     isFiltered: hasActiveFilters(filters),
   }

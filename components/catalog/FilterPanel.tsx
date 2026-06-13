@@ -1,14 +1,10 @@
 'use client'
 
 import type { SortOption } from '@/lib/filters'
+import { WARRANTY_LABELS, UNIT_TYPE_LABELS } from '@/lib/product-meta'
 import PriceRangeSlider from '@/components/ui/PriceRangeSlider'
 import { clsx } from 'clsx'
-import { FilterOptions, FilterState } from '@/types/products'
-
-// ============================================================
-// FilterPanel
-// Panel filter lengkap: model, storage, warna, kondisi, harga
-// ============================================================
+import { FilterOptions, FilterState, BranchKey } from '@/types/products'
 
 interface FilterPanelProps {
   filters: FilterState
@@ -22,16 +18,15 @@ interface FilterPanelProps {
 }
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
-  { value: 'harga-asc',  label: 'Harga: Termurah' },
+  { value: 'harga-asc', label: 'Harga: Termurah' },
   { value: 'harga-desc', label: 'Harga: Termahal' },
-  { value: 'nama-asc',   label: 'Nama: A–Z' },
-  { value: 'nama-desc',  label: 'Nama: Z–A' },
+  { value: 'nama-asc', label: 'Nama: A–Z' },
+  { value: 'nama-desc', label: 'Nama: Z–A' },
 ]
 
 const PRICE_MIN = 0
 const PRICE_MAX = 35_000_000
 
-// ── Sub-component: Select dropdown ──────────────────────────
 function FilterSelect({
   label,
   value,
@@ -58,14 +53,15 @@ function FilterSelect({
       >
         <option value="">Semua {label}</option>
         {options.map((opt) => (
-          <option key={opt} value={opt}>{opt}</option>
+          <option key={opt} value={opt}>
+            {opt}
+          </option>
         ))}
       </select>
     </div>
   )
 }
 
-// ── Main component ───────────────────────────────────────────
 export default function FilterPanel({
   filters,
   filterOptions,
@@ -78,8 +74,6 @@ export default function FilterPanel({
 }: FilterPanelProps) {
   return (
     <aside className={clsx('space-y-6', className)}>
-
-      {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-semibold text-gray-900">
           Filter
@@ -91,6 +85,7 @@ export default function FilterPanel({
         </h2>
         {activeFilterCount > 0 && (
           <button
+            type="button"
             onClick={onReset}
             className="text-xs text-gray-500 underline hover:text-gray-800 transition-colors"
           >
@@ -99,7 +94,6 @@ export default function FilterPanel({
         )}
       </div>
 
-      {/* Urutkan */}
       <div className="space-y-1.5">
         <label className="text-xs font-medium text-gray-700">Urutkan</label>
         <select
@@ -108,14 +102,48 @@ export default function FilterPanel({
           className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 transition-colors"
         >
           {SORT_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
           ))}
         </select>
       </div>
 
       <hr className="border-gray-100" />
 
-      {/* Model */}
+      <div className="space-y-1.5">
+        <label className="text-xs font-medium text-gray-700">Cabang</label>
+        <div className="flex flex-wrap gap-2">
+          {(['', 'gresik', 'tuban'] as const).map((val) => (
+            <button
+              key={val || 'semua'}
+              type="button"
+              onClick={() => onFilterChange('branch', val as '' | BranchKey)}
+              className={clsx(
+                'rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors',
+                filters.branch === val
+                  ? 'border-gray-900 bg-gray-900 text-white'
+                  : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+              )}
+            >
+              {val === '' ? 'Semua' : val === 'gresik' ? 'Gresik' : 'Tuban'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <label className="flex items-center gap-2 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={filters.readyOnly}
+          onChange={(e) => onFilterChange('readyOnly', e.target.checked)}
+          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+        />
+        <span className="text-xs font-medium text-gray-700">Ready stock saja</span>
+      </label>
+
+      <hr className="border-gray-100" />
+
       <FilterSelect
         label="Model"
         value={filters.model}
@@ -123,7 +151,6 @@ export default function FilterPanel({
         onChange={(val) => onFilterChange('model', val)}
       />
 
-      {/* Storage */}
       <FilterSelect
         label="Storage"
         value={filters.storage}
@@ -131,7 +158,6 @@ export default function FilterPanel({
         onChange={(val) => onFilterChange('storage', val)}
       />
 
-      {/* Warna */}
       <FilterSelect
         label="Warna"
         value={filters.color}
@@ -139,13 +165,13 @@ export default function FilterPanel({
         onChange={(val) => onFilterChange('color', val)}
       />
 
-      {/* Kondisi */}
       <div className="space-y-1.5">
         <label className="text-xs font-medium text-gray-700">Kondisi</label>
         <div className="flex gap-2">
           {(['', 'baru', 'second'] as const).map((val) => (
             <button
-              key={val}
+              key={val || 'semua'}
+              type="button"
               onClick={() => onFilterChange('condition', val)}
               className={clsx(
                 'flex-1 rounded-lg border py-1.5 text-xs font-medium transition-colors',
@@ -160,9 +186,40 @@ export default function FilterPanel({
         </div>
       </div>
 
+      <div className="space-y-1.5">
+        <label className="text-xs font-medium text-gray-700">Tipe unit</label>
+        <select
+          value={filters.unitType}
+          onChange={(e) => onFilterChange('unitType', e.target.value)}
+          className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900"
+        >
+          <option value="">Semua tipe</option>
+          {filterOptions.unitTypes.map((ut) => (
+            <option key={ut} value={ut}>
+              {UNIT_TYPE_LABELS[ut]}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-xs font-medium text-gray-700">Garansi</label>
+        <select
+          value={filters.warrantyType}
+          onChange={(e) => onFilterChange('warrantyType', e.target.value)}
+          className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900"
+        >
+          <option value="">Semua garansi</option>
+          {filterOptions.warrantyTypes.map((wt) => (
+            <option key={wt} value={wt}>
+              {WARRANTY_LABELS[wt]}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <hr className="border-gray-100" />
 
-      {/* Harga */}
       <div className="space-y-1.5">
         <label className="text-xs font-medium text-gray-700">Rentang Harga</label>
         <PriceRangeSlider
@@ -174,7 +231,6 @@ export default function FilterPanel({
           onChangeMax={(val) => onFilterChange('priceMax', val)}
         />
       </div>
-
     </aside>
   )
 }

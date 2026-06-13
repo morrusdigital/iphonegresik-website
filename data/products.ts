@@ -1,18 +1,7 @@
-import { FilterOptions, Product } from "@/types/products"
+import { enrichProduct, type ProductSeed } from '@/lib/products/enrich'
+import type { FilterOptions, Product } from '@/types/products'
 
-const UNSPLASH_IMAGES: Record<Product['category'], string> = {
-  iphone:
-    'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=1200&q=80',
-  ipad:
-    'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=1200&q=80',
-  macbook:
-    'https://images.unsplash.com/photo-1517336714739-489689fd1ca8?auto=format&fit=crop&w=1200&q=80',
-  accessories:
-    'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1200&q=80',
-}
-
-const BASE_PRODUCTS: Product[] = [
-  // ── iPhone 16 Series ─────────────────────────────────────
+const BASE_PRODUCTS: ProductSeed[] = [
   {
     id: 'iph-16-128-black-baru',
     name: 'iPhone 16',
@@ -23,9 +12,12 @@ const BASE_PRODUCTS: Product[] = [
     color: 'Black',
     condition: 'baru',
     price: 13999000,
-    image: '/images/products/iphone-16-black.jpg',
     specs: 'iPhone 16, 128GB, Black, Baru',
     stock: { gresik: 5, tuban: 3 },
+    sku: 'IP16-128-BLK',
+    badges: ['terlaris'],
+    featured: true,
+    commercial: { tradeInAvailable: true, installmentAvailable: true, promoLabel: 'Free screen guard' },
   },
   {
     id: 'iph-16-256-pink-baru',
@@ -37,9 +29,11 @@ const BASE_PRODUCTS: Product[] = [
     color: 'Pink',
     condition: 'baru',
     price: 15999000,
-    image: '/images/products/iphone-16-pink.jpg',
     specs: 'iPhone 16, 256GB, Pink, Baru',
     stock: { gresik: 2, tuban: 1 },
+    sku: 'IP16-256-PNK',
+    badges: ['baru-masuk', 'terlaris'],
+    featured: true,
   },
   {
     id: 'iph-16-512-white-baru',
@@ -51,12 +45,10 @@ const BASE_PRODUCTS: Product[] = [
     color: 'White',
     condition: 'baru',
     price: 19999000,
-    image: '/images/products/iphone-16-white.jpg',
     specs: 'iPhone 16, 512GB, White, Baru',
     stock: { gresik: 0, tuban: 2 },
+    sku: 'IP16-512-WHT',
   },
-
-  // ── iPhone 16 Pro Series ──────────────────────────────────
   {
     id: 'iph-16pro-256-titan-baru',
     name: 'iPhone 16 Pro',
@@ -67,9 +59,11 @@ const BASE_PRODUCTS: Product[] = [
     color: 'Natural Titanium',
     condition: 'baru',
     price: 21999000,
-    image: '/images/products/iphone-16-pro-natural.jpg',
     specs: 'iPhone 16 Pro, 256GB, Natural Titanium, Baru',
     stock: { gresik: 4, tuban: 0 },
+    sku: 'IP16P-256-NT',
+    badges: ['terlaris'],
+    featured: true,
   },
   {
     id: 'iph-16pro-512-black-baru',
@@ -81,9 +75,9 @@ const BASE_PRODUCTS: Product[] = [
     color: 'Black Titanium',
     condition: 'baru',
     price: 25999000,
-    image: '/images/products/iphone-16-pro-black.jpg',
     specs: 'iPhone 16 Pro, 512GB, Black Titanium, Baru',
     stock: { gresik: 1, tuban: 3 },
+    sku: 'IP16P-512-BT',
   },
   {
     id: 'iph-16pro-1tb-desert-baru',
@@ -95,12 +89,10 @@ const BASE_PRODUCTS: Product[] = [
     color: 'Desert Titanium',
     condition: 'baru',
     price: 30999000,
-    image: '/images/products/iphone-16-pro-desert.jpg',
     specs: 'iPhone 16 Pro, 1TB, Desert Titanium, Baru',
     stock: { gresik: 0, tuban: 0 },
+    sku: 'IP16P-1TB-DT',
   },
-
-  // ── iPhone 16 Pro Max ─────────────────────────────────────
   {
     id: 'iph-16promax-256-white-baru',
     name: 'iPhone 16 Pro Max',
@@ -111,9 +103,11 @@ const BASE_PRODUCTS: Product[] = [
     color: 'White Titanium',
     condition: 'baru',
     price: 24999000,
-    image: '/images/products/iphone-16-pro-max-white.jpg',
     specs: 'iPhone 16 Pro Max, 256GB, White Titanium, Baru',
     stock: { gresik: 3, tuban: 2 },
+    sku: 'IP16PM-256-WT',
+    badges: ['terlaris'],
+    featured: true,
   },
   {
     id: 'iph-16promax-512-natural-baru',
@@ -125,12 +119,10 @@ const BASE_PRODUCTS: Product[] = [
     color: 'Natural Titanium',
     condition: 'baru',
     price: 28999000,
-    image: '/images/products/iphone-16-pro-max-natural.jpg',
     specs: 'iPhone 16 Pro Max, 512GB, Natural Titanium, Baru',
     stock: { gresik: 2, tuban: 1 },
+    sku: 'IP16PM-512-NT',
   },
-
-  // ── iPhone 15 (Second) ────────────────────────────────────
   {
     id: 'iph-15-128-black-second',
     name: 'iPhone 15',
@@ -141,9 +133,14 @@ const BASE_PRODUCTS: Product[] = [
     color: 'Black',
     condition: 'second',
     price: 10999000,
-    image: '/images/products/iphone-15-black.jpg',
     specs: 'iPhone 15, 128GB, Black, Second',
     stock: { gresik: 2, tuban: 0 },
+    sku: 'IP15-128-BLK-S',
+    unitType: 'second',
+    batteryHealth: 94,
+    region: 'Ex-Inter',
+    completeness: { type: 'fullset', minusNote: 'No minus' },
+    commercial: { tradeInAvailable: true, installmentAvailable: true },
   },
   {
     id: 'iph-15-256-blue-second',
@@ -155,12 +152,16 @@ const BASE_PRODUCTS: Product[] = [
     color: 'Blue',
     condition: 'second',
     price: 12499000,
-    image: '/images/products/iphone-15-blue.jpg',
     specs: 'iPhone 15, 256GB, Blue, Second',
     stock: { gresik: 1, tuban: 2 },
+    sku: 'IP15-256-BLU-S',
+    unitType: 'like-new',
+    batteryHealth: 98,
+    region: 'iBox',
+    completeness: { type: 'fullset', minusNote: 'No minus' },
+    badges: ['promo'],
+    commercial: { tradeInAvailable: true, installmentAvailable: true, promoLabel: 'Diskon 500rb' },
   },
-
-  // ── iPad ──────────────────────────────────────────────────
   {
     id: 'ipad-10-64-silver-baru',
     name: 'iPad Gen 10',
@@ -171,9 +172,9 @@ const BASE_PRODUCTS: Product[] = [
     color: 'Silver',
     condition: 'baru',
     price: 7999000,
-    image: '/images/products/ipad-gen10-silver.jpg',
     specs: 'iPad Gen 10, 64GB, Silver, Baru',
     stock: { gresik: 4, tuban: 3 },
+    sku: 'IPAD10-64-SLV',
   },
   {
     id: 'ipad-air-256-purple-baru',
@@ -185,9 +186,10 @@ const BASE_PRODUCTS: Product[] = [
     color: 'Purple',
     condition: 'baru',
     price: 14999000,
-    image: '/images/products/ipad-air-m2-purple.jpg',
     specs: 'iPad Air M2, 256GB, Purple, Baru',
     stock: { gresik: 2, tuban: 0 },
+    sku: 'IPADAIR-256-PRP',
+    badges: ['baru-masuk'],
   },
   {
     id: 'ipad-pro-256-space-baru',
@@ -199,12 +201,10 @@ const BASE_PRODUCTS: Product[] = [
     color: 'Space Black',
     condition: 'baru',
     price: 19999000,
-    image: '/images/products/ipad-pro-m4-space.jpg',
     specs: 'iPad Pro M4 11", 256GB, Space Black, Baru',
     stock: { gresik: 1, tuban: 1 },
+    sku: 'IPADP-256-SBK',
   },
-
-  // ── Mac ───────────────────────────────────────────────────
   {
     id: 'mac-air-m3-8-256-midnight-baru',
     name: 'MacBook Air M3 13"',
@@ -215,9 +215,10 @@ const BASE_PRODUCTS: Product[] = [
     color: 'Midnight',
     condition: 'baru',
     price: 18999000,
-    image: '/images/products/macbook-air-m3-midnight.jpg',
     specs: 'MacBook Air M3 13", 8GB RAM, 256GB, Midnight, Baru',
     stock: { gresik: 3, tuban: 2 },
+    sku: 'MBA-M3-256-MID',
+    featured: true,
   },
   {
     id: 'mac-air-m3-8-512-starlight-baru',
@@ -229,9 +230,9 @@ const BASE_PRODUCTS: Product[] = [
     color: 'Starlight',
     condition: 'baru',
     price: 22999000,
-    image: '/images/products/macbook-air-m3-starlight.jpg',
     specs: 'MacBook Air M3 13", 8GB RAM, 512GB, Starlight, Baru',
     stock: { gresik: 1, tuban: 0 },
+    sku: 'MBA-M3-512-STR',
   },
   {
     id: 'mac-pro-m3-16-512-silver-baru',
@@ -243,12 +244,10 @@ const BASE_PRODUCTS: Product[] = [
     color: 'Silver',
     condition: 'baru',
     price: 29999000,
-    image: '/images/products/macbook-pro-m3-silver.jpg',
     specs: 'MacBook Pro M3 14", 16GB RAM, 512GB, Silver, Baru',
     stock: { gresik: 0, tuban: 1 },
+    sku: 'MBP-M3-512-SLV',
   },
-
-  // ── Aksesoris ─────────────────────────────────────────────
   {
     id: 'acc-airpods-pro2-baru',
     name: 'AirPods Pro 2',
@@ -259,9 +258,10 @@ const BASE_PRODUCTS: Product[] = [
     color: 'White',
     condition: 'baru',
     price: 3999000,
-    image: '/images/products/airpods-pro-2.jpg',
     specs: 'AirPods Pro 2, White, Baru',
     stock: { gresik: 6, tuban: 5 },
+    sku: 'ACC-APP2',
+    badges: ['terlaris'],
   },
   {
     id: 'acc-applewatchs10-baru',
@@ -273,9 +273,9 @@ const BASE_PRODUCTS: Product[] = [
     color: 'Jet Black',
     condition: 'baru',
     price: 6499000,
-    image: '/images/products/apple-watch-s10.jpg',
     specs: 'Apple Watch Series 10 41mm, Jet Black, Baru',
     stock: { gresik: 3, tuban: 4 },
+    sku: 'ACC-AWS10',
   },
   {
     id: 'acc-magicsafe-charger-baru',
@@ -287,40 +287,45 @@ const BASE_PRODUCTS: Product[] = [
     color: 'White',
     condition: 'baru',
     price: 749000,
-    image: '/images/products/magsafe-charger.jpg',
     specs: 'MagSafe Charger 15W, White, Baru',
     stock: { gresik: 10, tuban: 8 },
+    sku: 'ACC-MSAFE',
   },
 ]
 
-export const PRODUCTS: Product[] = BASE_PRODUCTS.map((product): Product => ({
-  ...product,
-  image: UNSPLASH_IMAGES[product.category],
-}))
+export const PRODUCTS: Product[] = BASE_PRODUCTS.map(enrichProduct)
 
-// ============================================================
-// HELPERS
-// ============================================================
-
-/** Ambil semua produk berdasarkan kategori */
 export function getProductsByCategory(category: Product['category']): Product[] {
   return PRODUCTS.filter((p) => p.category === category)
 }
 
-/** Ambil satu produk by slug */
 export function getProductBySlug(slug: string): Product | undefined {
   return PRODUCTS.find((p) => p.slug === slug)
 }
 
-/**
- * Generate filter options secara dinamis dari data produk.
- * Dipakai FilterPanel untuk populate dropdown pilihan.
- */
+export function getFeaturedProducts(): Product[] {
+  return PRODUCTS.filter((p) => p.featured)
+}
+
+export function getNewArrivals(): Product[] {
+  return PRODUCTS.filter((p) => p.badges.includes('baru-masuk'))
+}
+
+export function getBestSellers(): Product[] {
+  return PRODUCTS.filter((p) => p.badges.includes('terlaris'))
+}
+
+export function getLatestUpdatedAt(): string {
+  return PRODUCTS.reduce((latest, p) => (p.updatedAt > latest ? p.updatedAt : latest), PRODUCTS[0]?.updatedAt ?? '')
+}
+
 export function getFilterOptions(products: Product[] = PRODUCTS): FilterOptions {
   return {
     models: [...new Set(products.map((p) => p.model))].sort(),
     storages: [...new Set(products.map((p) => p.storage))].sort(),
     colors: [...new Set(products.map((p) => p.color))].sort(),
-    conditions: [...new Set(products.map((p) => p.condition))] as Product['condition'][],
+    conditions: [...new Set(products.map((p) => p.condition))],
+    unitTypes: [...new Set(products.map((p) => p.unitType))],
+    warrantyTypes: [...new Set(products.map((p) => p.warranty.type))],
   }
 }

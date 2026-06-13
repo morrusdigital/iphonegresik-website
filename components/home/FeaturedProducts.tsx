@@ -1,27 +1,36 @@
 import Link from 'next/link'
-import { PRODUCTS } from '@/data/products'
+import { getBestSellers } from '@/data/products'
 import ProductCard from '@/components/catalog/ProductCard'
 
 export default function FeaturedProducts() {
-  const featured = PRODUCTS.filter(
-    p => p.category === 'iphone' && p.condition === 'baru' && (p.stock.gresik > 0 || p.stock.tuban > 0)
-  ).slice(0, 4)
+  const featured = getBestSellers().slice(0, 4)
+  if (featured.length === 0) return null
 
   return (
-    <section className="space-y-5">
-      <div className="flex items-end justify-between">
+    <section className="home-section h-full space-y-6 p-6 sm:p-7" id="ready-stock">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-[11px] font-extrabold uppercase tracking-[.15em] text-blue-500 mb-1">✦ Terlaris minggu ini</p>
-          <h2 className="text-[26px] font-black text-gray-950 tracking-tight">Produk Unggulan</h2>
-          <p className="text-[13px] text-gray-400 mt-0.5">iPhone terbaru, stok selalu ter-update</p>
+          <span className="section-eyebrow">Siap dipesan sekarang</span>
+          <h2 className="section-title mt-4 text-[2rem] font-bold leading-none sm:text-[2.5rem]">
+            Produk favorit pilihan customer
+          </h2>
+          <p className="section-copy mt-3 max-w-2xl text-[14px] leading-7">
+            Unit yang paling sering ditanyakan dan paling cepat dibeli. Cocok untuk Anda yang ingin langsung fokus ke produk paling laris.
+          </p>
         </div>
-        <Link href="/katalog"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] border border-gray-200 bg-white text-[12px] font-bold text-gray-500 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-300 transition-all">
-          Lihat Semua →
+        <Link
+          href="/katalog?ready=1"
+          className="inline-flex items-center gap-2 self-start rounded-full border border-black/8 bg-white px-4 py-2.5 text-[12px] font-bold text-gray-700 transition-all hover:-translate-y-0.5 hover:text-gray-950"
+        >
+          Lihat semua ready stock
+          <span aria-hidden="true">{'->'}</span>
         </Link>
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {featured.map(p => <ProductCard key={p.id} product={p} />)}
+
+      <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
+        {featured.map((p) => (
+          <ProductCard key={p.id} product={p} />
+        ))}
       </div>
     </section>
   )
