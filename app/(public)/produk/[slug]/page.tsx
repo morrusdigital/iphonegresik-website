@@ -1,20 +1,16 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { PRODUCTS, getProductBySlug } from '@/data/products'
 import ProductDetail from '@/components/catalog/ProductDetail'
 import { formatPrice } from '@/lib/filters'
+import { getProduct, getRelatedProducts } from '@/lib/products/source'
 
 interface PageProps {
   params: Promise<{ slug: string }>
 }
 
-export async function generateStaticParams() {
-  return PRODUCTS.map((p) => ({ slug: p.slug }))
-}
-
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
-  const product = getProductBySlug(slug)
+  const product = await getProduct(slug)
   if (!product) return { title: 'Produk tidak ditemukan' }
 
   return {
@@ -25,8 +21,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ProdukDetailPage({ params }: PageProps) {
   const { slug } = await params
-  const product = getProductBySlug(slug)
+  const product = await getProduct(slug)
   if (!product) notFound()
 
-  return <ProductDetail product={product} />
+  const similarProducts = await getRelatedProducts(product)
+
+  return <ProductDetail product={product} similarProducts={similarProducts} />
 }

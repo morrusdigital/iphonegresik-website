@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
-import { PRODUCTS } from '@/data/products'
 import ProductGrid from '@/components/catalog/ProductGrid'
+import { getProducts } from '@/lib/products/source'
 
 export const metadata: Metadata = {
   title: 'Katalog Produk',
@@ -13,6 +13,7 @@ export default async function KatalogPage({
 }: {
   searchParams: Promise<{ ready?: string }>
 }) {
+  const products = await getProducts()
   const params = await searchParams
   const initialFilters =
     params.ready === '1' ? { readyOnly: true as const } : undefined
@@ -25,7 +26,7 @@ export default async function KatalogPage({
           Stok ter-update dari sistem internal · Gresik & Tuban
         </p>
       </div>
-      <ProductGrid initialProducts={PRODUCTS} initialFilters={initialFilters} />
+      <ProductGrid initialProducts={products} initialFilters={initialFilters} />
     </div>
   )
 }

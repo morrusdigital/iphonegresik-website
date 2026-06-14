@@ -1,4 +1,5 @@
 import { enrichProduct, type ProductSeed } from '@/lib/products/enrich'
+import { buildFilterOptions } from '@/lib/products/filter-options'
 import type { FilterOptions, Product } from '@/types/products'
 
 const BASE_PRODUCTS: ProductSeed[] = [
@@ -320,12 +321,5 @@ export function getLatestUpdatedAt(): string {
 }
 
 export function getFilterOptions(products: Product[] = PRODUCTS): FilterOptions {
-  return {
-    models: [...new Set(products.map((p) => p.model))].sort(),
-    storages: [...new Set(products.map((p) => p.storage))].sort(),
-    colors: [...new Set(products.map((p) => p.color))].sort(),
-    conditions: [...new Set(products.map((p) => p.condition))],
-    unitTypes: [...new Set(products.map((p) => p.unitType))],
-    warrantyTypes: [...new Set(products.map((p) => p.warranty.type))],
-  }
+  return buildFilterOptions(products)
 }

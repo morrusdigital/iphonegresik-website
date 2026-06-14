@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getProductsByCategory } from '@/data/products'
+import { getProductsForCategory } from '@/lib/products/source'
 import type { Category } from '@/types/products'
 import ProductGrid from '@/components/catalog/ProductGrid'
 
@@ -43,18 +43,8 @@ const SLUG_TO_CATEGORY: Record<string, Category> = {
   accessories: 'accessories',
 }
 
-const VALID_SLUGS = Object.keys(SLUG_TO_CATEGORY)
-
 function resolveCategoryFromSlug(slug: string): Category | null {
   return SLUG_TO_CATEGORY[slug] ?? null
-}
-
-// ============================================================
-// generateStaticParams — pre-render semua slug kategori
-// ============================================================
-
-export function generateStaticParams() {
-  return VALID_SLUGS.map((slug) => ({ slug }))
 }
 
 // ============================================================
@@ -98,7 +88,7 @@ export default async function KategoriPage({
   }
 
   const config = CATEGORY_CONFIG[category]
-  const products = getProductsByCategory(category)
+  const products = await getProductsForCategory(category)
 
   return (
     <div className="space-y-6">

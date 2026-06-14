@@ -4,7 +4,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import { BRANCHES } from '@/data/branches'
-import { PRODUCTS } from '@/data/products'
 import { formatPrice } from '@/lib/filters'
 import { formatWarrantyShort, formatCompletenessShort, UNIT_TYPE_LABELS } from '@/lib/product-meta'
 import { getStockLabel, hasStockInBranch } from '@/lib/stock'
@@ -17,16 +16,16 @@ import { clsx } from 'clsx'
 
 interface ProductDetailProps {
   product: Product
+  similarProducts?: Product[]
 }
 
-export default function ProductDetail({ product }: ProductDetailProps) {
+export default function ProductDetail({
+  product,
+  similarProducts = [],
+}: ProductDetailProps) {
   const [activeImage, setActiveImage] = useState(0)
   const [branchKey, setBranchKey] = useState<BranchKey>('gresik')
   const [openFaq, setOpenFaq] = useState<number | null>(0)
-
-  const similar = PRODUCTS.filter(
-    (p) => p.id !== product.id && p.category === product.category && (p.stock.gresik > 0 || p.stock.tuban > 0)
-  ).slice(0, 4)
 
   const showVideo =
     product.condition === 'second' ||
@@ -211,11 +210,11 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         </section>
       )}
 
-      {similar.length > 0 && (
+      {similarProducts.length > 0 && (
         <section className="space-y-4">
           <h2 className="text-lg font-bold text-gray-900">Produk serupa</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {similar.map((p) => (
+            {similarProducts.map((p) => (
               <ProductCard key={p.id} product={p} activeBranchKey={branchKey} />
             ))}
           </div>

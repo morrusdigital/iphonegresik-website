@@ -9,7 +9,7 @@ import {
   getActiveFilterChips,
   SortOption,
 } from '@/lib/filters'
-import { getFilterOptions } from '@/data/products'
+import { buildFilterOptions } from '@/lib/products/filter-options'
 import { DEFAULT_FILTER_STATE, FilterState, Product } from '@/types/products'
 
 interface UseFiltersOptions {
@@ -24,7 +24,7 @@ interface UseFiltersReturn {
   filteredProducts: Product[]
   totalFiltered: number
   totalAll: number
-  filterOptions: ReturnType<typeof getFilterOptions>
+  filterOptions: ReturnType<typeof buildFilterOptions>
   activeChips: ReturnType<typeof getActiveFilterChips>
   setFilter: <K extends keyof FilterState>(key: K, value: FilterState[K]) => void
   setSort: (sort: SortOption) => void
@@ -46,7 +46,7 @@ export function useFilters({
   const [sort, setSort] = useState<SortOption>(initialSort)
 
   const filterOptions = useMemo(
-    () => getFilterOptions(initialProducts),
+    () => buildFilterOptions(initialProducts),
     [initialProducts]
   )
 
