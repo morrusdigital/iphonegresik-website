@@ -1,6 +1,5 @@
 import Link from 'next/link'
-import type { Category } from '@/types/products'
-import { getProductsByCategory } from '@/data/products'
+import type { Category, Product } from '@/types/products'
 
 const CATS: { key: Category; label: string; desc: string; href: string }[] = [
   { key: 'iphone', label: 'iPhone', desc: 'Pilihan lengkap untuk upgrade harian, kerja, sampai konten kreatif.', href: '/kategori/iphone' },
@@ -9,7 +8,11 @@ const CATS: { key: Category; label: string; desc: string; href: string }[] = [
   { key: 'accessories', label: 'Aksesoris', desc: 'Lengkapi pengalaman Apple Anda dengan aksesoris original yang tepat.', href: '/kategori/aksesoris' },
 ]
 
-export default function CategoryHighlight() {
+interface CategoryHighlightProps {
+  products: Product[]
+}
+
+export default function CategoryHighlight({ products }: CategoryHighlightProps) {
   return (
     <section className="home-section space-y-6 p-6 sm:p-7">
       <div className="max-w-2xl">
@@ -24,7 +27,7 @@ export default function CategoryHighlight() {
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {CATS.map((cat) => {
-          const count = getProductsByCategory(cat.key).length
+          const count = products.filter((product) => product.category === cat.key).length
 
           return (
             <Link

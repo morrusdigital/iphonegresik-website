@@ -1,6 +1,4 @@
-import type { NextConfig } from 'next'
-
-const remotePatterns: NonNullable<NextConfig['images']>['remotePatterns'] = [
+const remotePatterns = [
   {
     protocol: 'https',
     hostname: 'images.unsplash.com',
@@ -14,7 +12,7 @@ if (laravelApiUrl) {
     const parsedUrl = new URL(laravelApiUrl)
 
     remotePatterns.push({
-      protocol: parsedUrl.protocol.replace(':', '') as 'http' | 'https',
+      protocol: parsedUrl.protocol === 'http:' ? 'http' : 'https',
       hostname: parsedUrl.hostname,
       port: parsedUrl.port,
     })
@@ -23,7 +21,7 @@ if (laravelApiUrl) {
   }
 }
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   images: {
     remotePatterns,
     formats: ['image/avif', 'image/webp'],

@@ -1,7 +1,6 @@
 import Link from 'next/link'
-import { getProductsByCategory } from '@/data/products'
 import { formatPrice } from '@/lib/filters'
-import type { Category } from '@/types/products'
+import type { Category, Product } from '@/types/products'
 
 const CATEGORY_CARDS: { key: Category; label: string; href: string }[] = [
   { key: 'macbook', label: 'Mac', href: '/kategori/mac' },
@@ -10,7 +9,11 @@ const CATEGORY_CARDS: { key: Category; label: string; href: string }[] = [
   { key: 'accessories', label: 'Aksesoris', href: '/kategori/aksesoris' },
 ]
 
-export default function MarqueeStrip() {
+interface MarqueeStripProps {
+  products: Product[]
+}
+
+export default function MarqueeStrip({ products }: MarqueeStripProps) {
   return (
     <section className="home-section p-6 sm:p-7">
       <h2 className="section-title text-[2rem] font-bold tracking-[-0.05em] sm:text-[2.5rem]">
@@ -19,10 +22,10 @@ export default function MarqueeStrip() {
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {CATEGORY_CARDS.map((item) => {
-          const products = getProductsByCategory(item.key)
-          const minPrice = products.reduce(
+          const categoryProducts = products.filter((product) => product.category === item.key)
+          const minPrice = categoryProducts.reduce(
             (lowest, product) => (product.price < lowest ? product.price : lowest),
-            products[0]?.price ?? 0
+            categoryProducts[0]?.price ?? 0
           )
 
           return (
@@ -35,7 +38,7 @@ export default function MarqueeStrip() {
                 {item.label}
               </p>
               <p className="mt-3 text-[26px] font-semibold tracking-[-0.03em] text-gray-950">
-                Mulai {formatPrice(minPrice)}
+                {categoryProducts.length > 0 ? `Mulai ${formatPrice(minPrice)}` : 'Segera hadir'}
               </p>
               <p className="mt-2 text-[13px] leading-6 text-gray-500">
                 Lihat pilihan {item.label} original dengan harga terbaik sesuai kebutuhan Anda.

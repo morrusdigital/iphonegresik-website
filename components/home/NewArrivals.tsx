@@ -1,9 +1,12 @@
 import Link from 'next/link'
-import { getNewArrivals } from '@/data/products'
 import ProductCard from '@/components/catalog/ProductCard'
+import type { Product } from '@/types/products'
 
-export default function NewArrivals() {
-  const products = getNewArrivals()
+interface NewArrivalsProps {
+  products: Product[]
+}
+
+export default function NewArrivals({ products }: NewArrivalsProps) {
   if (products.length === 0) return null
 
   return (

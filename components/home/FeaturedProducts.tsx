@@ -1,10 +1,13 @@
 import Link from 'next/link'
-import { getBestSellers } from '@/data/products'
 import ProductCard from '@/components/catalog/ProductCard'
+import type { Product } from '@/types/products'
 
-export default function FeaturedProducts() {
-  const featured = getBestSellers().slice(0, 4)
-  if (featured.length === 0) return null
+interface FeaturedProductsProps {
+  products: Product[]
+}
+
+export default function FeaturedProducts({ products }: FeaturedProductsProps) {
+  if (products.length === 0) return null
 
   return (
     <section className="home-section h-full space-y-6 p-6 sm:p-7" id="ready-stock">
@@ -28,7 +31,7 @@ export default function FeaturedProducts() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
-        {featured.map((p) => (
+        {products.map((p) => (
           <ProductCard key={p.id} product={p} />
         ))}
       </div>
