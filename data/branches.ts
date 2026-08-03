@@ -6,8 +6,9 @@ export const BRANCHES: Branch[] = [
     name: 'iPhone Gresik',
     city: 'Gresik',
     whatsapp: process.env.NEXT_PUBLIC_WA_GRESIK ?? '6281234567890',
-    address: 'Jl. Dr. Wahidin Sudiro Husodo, Gresik, Jawa Timur',
-    mapsUrl: 'https://maps.google.com/?q=iPhone+Gresik',
+    address: 'Jl. Dr. Soetomo No.30, Ngipik, Karangpoh, Kec. Gresik, Kabupaten Gresik, Jawa Timur 61121',
+    mapsUrl:
+      'https://maps.google.com/?q=Jl.+Dr.+Soetomo+No.30,+Ngipik,+Karangpoh,+Kec.+Gresik,+Kabupaten+Gresik,+Jawa+Timur+61121',
     hours: 'Senin–Sabtu 09.00–20.00',
     slaResponse: 'Respon admin rata-rata < 15 menit',
   },
@@ -16,8 +17,9 @@ export const BRANCHES: Branch[] = [
     name: 'iPhone Tuban',
     city: 'Tuban',
     whatsapp: process.env.NEXT_PUBLIC_WA_TUBAN ?? '6281234567891',
-    address: 'Jl. Basuki Rahmat, Tuban, Jawa Timur',
-    mapsUrl: 'https://maps.google.com/?q=iPhone+Tuban',
+    address: 'Jl. Basuki Rachmad No.29, Kebonsari, Kec. Tuban, Kabupaten Tuban, Jawa Timur 62316',
+    mapsUrl:
+      'https://maps.google.com/?q=Jl.+Basuki+Rachmad+No.29,+Kebonsari,+Kec.+Tuban,+Kabupaten+Tuban,+Jawa+Timur+62316',
     hours: 'Senin–Sabtu 09.00–20.00',
     slaResponse: 'Respon admin rata-rata < 15 menit',
   },

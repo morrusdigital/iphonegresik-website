@@ -106,3 +106,20 @@ export function formatPriceShort(price: number): string {
   }
   return formatPrice(price)
 }
+
+export function formatDateLabel(value?: string, fallback = 'Menunggu update stok'): string {
+  if (!value) return fallback
+
+  const normalized = /^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T00:00:00` : value
+  const parsed = new Date(normalized)
+
+  if (Number.isNaN(parsed.getTime())) {
+    return value
+  }
+
+  return new Intl.DateTimeFormat('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(parsed)
+}

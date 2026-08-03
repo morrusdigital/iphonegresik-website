@@ -53,15 +53,6 @@ export default function Navbar() {
           </div>
 
           <nav className="hidden items-center gap-1 md:flex" aria-label="Navigasi utama">
-            <button
-              type="button"
-              className="mr-1 flex h-10 w-10 items-center justify-center rounded-full text-gray-700 transition-colors hover:bg-gray-100"
-              aria-label="Buka menu desktop"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.7} stroke="currentColor" className="h-5 w-5" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-              </svg>
-            </button>
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}

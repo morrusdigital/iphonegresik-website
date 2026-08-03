@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { formatPrice } from '@/lib/filters'
+import { formatDateLabel, formatPrice } from '@/lib/filters'
 import HeroPhoneVisual from '@/components/home/HeroPhoneVisual'
 import type { Product } from '@/types/products'
 
@@ -54,7 +54,9 @@ export default function HeroBanner({ product, lastUpdate }: HeroBannerProps) {
             </div>
             <div className="rounded-[24px] bg-[#f5f5f7] p-4">
               <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-gray-400">Update terakhir</p>
-              <p className="mt-2 text-[18px] font-semibold text-gray-950">{lastUpdate || 'Menunggu produk aktif'}</p>
+              <p className="mt-2 text-[18px] font-semibold text-gray-950">
+                {formatDateLabel(lastUpdate, 'Menunggu produk aktif')}
+              </p>
             </div>
             <div className="rounded-[24px] bg-[#f5f5f7] p-4">
               <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-gray-400">Layanan favorit</p>

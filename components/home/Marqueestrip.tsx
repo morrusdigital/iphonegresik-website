@@ -8,6 +8,7 @@ const CATEGORY_CARDS: { key: Category; label: string; href: string }[] = [
   { key: 'ipad', label: 'iPad', href: '/kategori/ipad' },
   { key: 'accessories', label: 'Aksesoris', href: '/kategori/aksesoris' },
 ]
+const MIN_DISPLAYABLE_PRICE = 1_000
 
 interface MarqueeStripProps {
   products: Product[]
@@ -23,10 +24,15 @@ export default function MarqueeStrip({ products }: MarqueeStripProps) {
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {CATEGORY_CARDS.map((item) => {
           const categoryProducts = products.filter((product) => product.category === item.key)
-          const minPrice = categoryProducts.reduce(
-            (lowest, product) => (product.price < lowest ? product.price : lowest),
-            categoryProducts[0]?.price ?? 0
+          const pricedProducts = categoryProducts.filter(
+            (product) => product.price >= MIN_DISPLAYABLE_PRICE
           )
+          const minPrice = pricedProducts.reduce(
+            (lowest, product) => (product.price < lowest ? product.price : lowest),
+            pricedProducts[0]?.price ?? 0
+          )
+          const priceLabel =
+            pricedProducts.length > 0 ? `Mulai ${formatPrice(minPrice)}` : 'Segera hadir'
 
           return (
             <Link
@@ -38,7 +44,7 @@ export default function MarqueeStrip({ products }: MarqueeStripProps) {
                 {item.label}
               </p>
               <p className="mt-3 text-[26px] font-semibold tracking-[-0.03em] text-gray-950">
-                {categoryProducts.length > 0 ? `Mulai ${formatPrice(minPrice)}` : 'Segera hadir'}
+                {priceLabel}
               </p>
               <p className="mt-2 text-[13px] leading-6 text-gray-500">
                 Lihat pilihan {item.label} original dengan harga terbaik sesuai kebutuhan Anda.

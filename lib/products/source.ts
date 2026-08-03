@@ -12,6 +12,7 @@ import type {
 
 const STOREFRONT_REVALIDATE_SECONDS = 60
 let hasWarnedMissingConfig = false
+let hasWarnedStorefrontUnavailable = false
 
 function hasStorefrontConfig(): boolean {
   return Boolean(process.env.LARAVEL_POS_API_URL && process.env.LARAVEL_POS_API_TOKEN)
@@ -22,6 +23,15 @@ function warnMissingStorefrontConfig() {
   hasWarnedMissingConfig = true
   console.warn(
     'LARAVEL_POS_API_URL atau LARAVEL_POS_API_TOKEN belum di-set. Katalog masih memakai data fallback statis.'
+  )
+}
+
+function warnStorefrontUnavailable(error: unknown) {
+  if (hasWarnedStorefrontUnavailable) return
+  hasWarnedStorefrontUnavailable = true
+  console.warn(
+    'Storefront API tidak bisa diakses. Katalog sementara memakai data fallback statis.',
+    error
   )
 }
 
@@ -140,7 +150,12 @@ export async function getProducts(): Promise<Product[]> {
     return PRODUCTS
   }
 
-  return getProductsFromStorefront()
+  try {
+    return await getProductsFromStorefront()
+  } catch (error) {
+    warnStorefrontUnavailable(error)
+    return PRODUCTS
+  }
 }
 
 export async function getProduct(slug: string): Promise<Product | undefined> {
@@ -160,7 +175,8 @@ export async function getProduct(slug: string): Promise<Product | undefined> {
       return undefined
     }
 
-    throw error
+    warnStorefrontUnavailable(error)
+    return getProductBySlug(slug)
   }
 }
 
@@ -170,7 +186,12 @@ export async function getProductsForCategory(category: Category): Promise<Produc
     return getProductsByCategory(category)
   }
 
-  return getProductsFromStorefront({ category })
+  try {
+    return await getProductsFromStorefront({ category })
+  } catch (error) {
+    warnStorefrontUnavailable(error)
+    return getProductsByCategory(category)
+  }
 }
 
 export async function getRelatedProducts(

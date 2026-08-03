@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import { BRANCHES } from '@/data/branches'
-import { formatPrice } from '@/lib/filters'
+import { formatDateLabel, formatPrice } from '@/lib/filters'
 import { formatWarrantyShort, formatCompletenessShort, UNIT_TYPE_LABELS } from '@/lib/product-meta'
 import { getStockLabel, hasStockInBranch } from '@/lib/stock'
 import { getProductWALink } from '@/lib/whatsapp'
@@ -95,7 +95,7 @@ export default function ProductDetail({
             {product.batteryHealth != null && (
               <DetailRow label="Battery health" value={`${product.batteryHealth}%`} />
             )}
-            <DetailRow label="Update stok" value={product.updatedAt} />
+            <DetailRow label="Update stok" value={formatDateLabel(product.updatedAt)} />
           </dl>
 
           {product.description && (

@@ -28,6 +28,7 @@ export default function CategoryHighlight({ products }: CategoryHighlightProps) 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {CATS.map((cat) => {
           const count = products.filter((product) => product.category === cat.key).length
+          const countLabel = count > 0 ? `${count} produk` : 'Segera hadir'
 
           return (
             <Link
@@ -36,7 +37,7 @@ export default function CategoryHighlight({ products }: CategoryHighlightProps) 
               className="rounded-[24px] border border-gray-200 bg-white p-5 transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(0,0,0,0.05)]"
             >
               <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-gray-400">
-                {count} produk
+                {countLabel}
               </p>
               <p className="mt-3 text-[28px] font-semibold tracking-[-0.03em] text-gray-950">
                 {cat.label}
