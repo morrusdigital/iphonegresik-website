@@ -91,7 +91,6 @@ export default function ProductDetail({
             <DetailRow label="Tipe unit" value={UNIT_TYPE_LABELS[product.unitType]} />
             <DetailRow label="Garansi" value={formatWarrantyShort(product)} />
             <DetailRow label="Kelengkapan" value={formatCompletenessShort(product)} />
-            {product.region && <DetailRow label="Region" value={product.region} />}
             {product.batteryHealth != null && (
               <DetailRow label="Battery health" value={`${product.batteryHealth}%`} />
             )}

@@ -53,7 +53,6 @@ export function getProductMetaLines(product: Product): string[] {
     UNIT_TYPE_LABELS[product.unitType],
     formatCompletenessShort(product),
   ]
-  if (product.region) lines.push(`Region: ${product.region}`)
   if (product.batteryHealth != null) lines.push(`Battery health ${product.batteryHealth}%`)
   return lines
 }
