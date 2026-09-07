@@ -30,6 +30,10 @@ export default function ProductDetail({
   const [zoomLevel, setZoomLevel] = useState(1)
 
   const activeImageSrc = product.images[activeImage] ?? product.image
+  const activeImageDownloadUrl = getProductImageDownloadUrl(
+    activeImageSrc,
+    `${product.slug}-${activeImage + 1}`
+  )
 
   const showVideo =
     product.condition === 'second' ||
@@ -89,6 +93,12 @@ export default function ProductDetail({
               Klik untuk zoom
             </span>
           </button>
+          <a
+            href={activeImageDownloadUrl}
+            className="inline-flex w-full items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-gray-800 transition-colors hover:bg-gray-50"
+          >
+            Unduh gambar
+          </a>
           {product.images.length > 1 && (
             <div className="flex gap-2">
               {product.images.map((img, i) => (
@@ -261,6 +271,7 @@ export default function ProductDetail({
           productName={product.name}
           images={product.images.length > 0 ? product.images : [product.image]}
           activeImage={activeImage}
+          productSlug={product.slug}
           zoomLevel={zoomLevel}
           onClose={() => setIsZoomOpen(false)}
           onImageChange={(index) => {
@@ -278,6 +289,7 @@ export default function ProductDetail({
 
 interface ProductImageZoomProps {
   productName: string
+  productSlug: string
   images: string[]
   activeImage: number
   zoomLevel: number
@@ -290,6 +302,7 @@ interface ProductImageZoomProps {
 
 function ProductImageZoom({
   productName,
+  productSlug,
   images,
   activeImage,
   zoomLevel,
@@ -300,6 +313,7 @@ function ProductImageZoom({
   onResetZoom,
 }: ProductImageZoomProps) {
   const imageSrc = images[activeImage] ?? images[0]
+  const downloadUrl = getProductImageDownloadUrl(imageSrc, `${productSlug}-${activeImage + 1}`)
 
   return (
     <div className="fixed inset-0 z-50 bg-gray-950/95 px-4 py-4 text-white sm:px-6">
@@ -330,6 +344,12 @@ function ProductImageZoom({
             >
               {Math.round(zoomLevel * 100)}%
             </button>
+            <a
+              href={downloadUrl}
+              className="flex h-9 items-center justify-center rounded-lg bg-white/10 px-3 text-xs font-bold transition-colors hover:bg-white/20"
+            >
+              Unduh
+            </a>
             <button
               type="button"
               onClick={onZoomIn}
@@ -389,6 +409,11 @@ function ProductImageZoom({
       </div>
     </div>
   )
+}
+
+function getProductImageDownloadUrl(src: string, name: string): string {
+  const params = new URLSearchParams({ src, name })
+  return `/api/product-image-download?${params.toString()}`
 }
 
 function DetailRow({ label, value }: { label: string; value: string }) {
