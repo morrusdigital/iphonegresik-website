@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BRANCHES } from '@/data/branches'
 import { formatDateLabel, formatPrice } from '@/lib/filters'
 import { formatWarrantyShort, formatCompletenessShort, UNIT_TYPE_LABELS } from '@/lib/product-meta'
@@ -26,11 +26,38 @@ export default function ProductDetail({
   const [activeImage, setActiveImage] = useState(0)
   const [branchKey, setBranchKey] = useState<BranchKey>('gresik')
   const [openFaq, setOpenFaq] = useState<number | null>(0)
+  const [isZoomOpen, setIsZoomOpen] = useState(false)
+  const [zoomLevel, setZoomLevel] = useState(1)
+
+  const activeImageSrc = product.images[activeImage] ?? product.image
 
   const showVideo =
     product.condition === 'second' ||
     product.unitType === 'second' ||
     product.unitType === 'like-new'
+
+  useEffect(() => {
+    if (!isZoomOpen) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsZoomOpen(false)
+      }
+    }
+
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.body.style.overflow = ''
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isZoomOpen])
+
+  const openZoom = () => {
+    setZoomLevel(1)
+    setIsZoomOpen(true)
+  }
 
   return (
     <div className="space-y-10">
@@ -44,15 +71,24 @@ export default function ProductDetail({
 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
         <div className="space-y-3">
-          <div className="relative aspect-square rounded-2xl bg-gradient-to-br from-[#f8faff] to-[#f0f4ff] overflow-hidden">
+          <button
+            type="button"
+            onClick={openZoom}
+            className="group relative aspect-square w-full overflow-hidden rounded-2xl bg-gradient-to-br from-[#f8faff] to-[#f0f4ff] text-left"
+            aria-label={`Perbesar gambar ${product.name}`}
+          >
             <Image
-              src={product.images[activeImage] ?? product.image}
+              src={activeImageSrc}
               alt={product.name}
               fill
-              className="object-contain p-8"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-contain p-8 transition-transform duration-300 group-hover:scale-[1.03]"
               priority
             />
-          </div>
+            <span className="absolute bottom-4 right-4 rounded-lg bg-white/90 px-3 py-1.5 text-xs font-bold text-gray-800 shadow-sm ring-1 ring-gray-200 backdrop-blur">
+              Klik untuk zoom
+            </span>
+          </button>
           {product.images.length > 1 && (
             <div className="flex gap-2">
               {product.images.map((img, i) => (
@@ -219,6 +255,138 @@ export default function ProductDetail({
           </div>
         </section>
       )}
+
+      {isZoomOpen && (
+        <ProductImageZoom
+          productName={product.name}
+          images={product.images.length > 0 ? product.images : [product.image]}
+          activeImage={activeImage}
+          zoomLevel={zoomLevel}
+          onClose={() => setIsZoomOpen(false)}
+          onImageChange={(index) => {
+            setActiveImage(index)
+            setZoomLevel(1)
+          }}
+          onZoomIn={() => setZoomLevel((current) => Math.min(current + 0.25, 3))}
+          onZoomOut={() => setZoomLevel((current) => Math.max(current - 0.25, 1))}
+          onResetZoom={() => setZoomLevel(1)}
+        />
+      )}
+    </div>
+  )
+}
+
+interface ProductImageZoomProps {
+  productName: string
+  images: string[]
+  activeImage: number
+  zoomLevel: number
+  onClose: () => void
+  onImageChange: (index: number) => void
+  onZoomIn: () => void
+  onZoomOut: () => void
+  onResetZoom: () => void
+}
+
+function ProductImageZoom({
+  productName,
+  images,
+  activeImage,
+  zoomLevel,
+  onClose,
+  onImageChange,
+  onZoomIn,
+  onZoomOut,
+  onResetZoom,
+}: ProductImageZoomProps) {
+  const imageSrc = images[activeImage] ?? images[0]
+
+  return (
+    <div className="fixed inset-0 z-50 bg-gray-950/95 px-4 py-4 text-white sm:px-6">
+      <button
+        type="button"
+        onClick={onClose}
+        className="absolute inset-0 cursor-zoom-out"
+        aria-label="Tutup zoom gambar"
+      />
+
+      <div className="relative z-10 mx-auto flex h-full max-w-6xl flex-col gap-4">
+        <div className="flex items-center justify-between gap-3">
+          <p className="min-w-0 truncate text-sm font-semibold">{productName}</p>
+          <div className="flex shrink-0 items-center gap-2">
+            <button
+              type="button"
+              onClick={onZoomOut}
+              disabled={zoomLevel <= 1}
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 text-lg font-bold transition-colors hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-40"
+              aria-label="Perkecil gambar"
+            >
+              -
+            </button>
+            <button
+              type="button"
+              onClick={onResetZoom}
+              className="h-9 rounded-lg bg-white/10 px-3 text-xs font-bold transition-colors hover:bg-white/20"
+            >
+              {Math.round(zoomLevel * 100)}%
+            </button>
+            <button
+              type="button"
+              onClick={onZoomIn}
+              disabled={zoomLevel >= 3}
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 text-lg font-bold transition-colors hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-40"
+              aria-label="Perbesar gambar"
+            >
+              +
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-white text-xl font-bold text-gray-950 transition-colors hover:bg-gray-200"
+              aria-label="Tutup zoom gambar"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+
+        <div className="min-h-0 flex-1 overflow-auto rounded-xl bg-white/5">
+          <div className="flex min-h-full min-w-full items-center justify-center p-4 sm:p-8">
+            <div
+              className="relative aspect-square shrink-0 transition-[width] duration-200"
+              style={{ width: `${zoomLevel * 100}%` }}
+            >
+              <Image
+                src={imageSrc}
+                alt={productName}
+                fill
+                sizes="100vw"
+                className="object-contain"
+                priority
+              />
+            </div>
+          </div>
+        </div>
+
+        {images.length > 1 && (
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {images.map((img, index) => (
+              <button
+                key={`${index}-${img}`}
+                type="button"
+                onClick={() => onImageChange(index)}
+                className={clsx(
+                  'relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 bg-white/10',
+                  activeImage === index ? 'border-white' : 'border-transparent opacity-70'
+                )}
+                aria-label={`Lihat gambar ${index + 1}`}
+              >
+                <Image src={img} alt="" fill sizes="64px" className="object-contain p-1" />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
