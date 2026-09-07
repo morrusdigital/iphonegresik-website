@@ -64,6 +64,7 @@ export interface Product {
 }
 
 export interface FilterState {
+  query: string
   model: string
   storage: string
   color: string
@@ -77,6 +78,7 @@ export interface FilterState {
 }
 
 export const DEFAULT_FILTER_STATE: FilterState = {
+  query: '',
   model: '',
   storage: '',
   color: '',

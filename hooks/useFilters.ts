@@ -74,8 +74,8 @@ export function useFilters({
   }, [])
 
   const resetFilters = useCallback(() => {
-    setFilters({ ...DEFAULT_FILTER_STATE, ...initialFilters })
-  }, [initialFilters])
+    setFilters(DEFAULT_FILTER_STATE)
+  }, [])
 
   return {
     filters,

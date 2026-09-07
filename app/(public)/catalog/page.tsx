@@ -5,18 +5,20 @@ import { getProducts } from '@/lib/products/source'
 export const metadata: Metadata = {
   title: 'Katalog Produk',
   description:
-    'Katalog lengkap iPhone, iPad, Mac, dan Aksesoris Apple original. Filter cabang, ready stock, garansi, dan harga.',
+    'Katalog lengkap iPhone, iPad, Mac, dan Aksesoris Apple original. Cari produk, filter cabang, ready stock, garansi, dan harga.',
 }
 
 export default async function KatalogPage({
   searchParams,
 }: {
-  searchParams: Promise<{ ready?: string }>
+  searchParams: Promise<{ ready?: string; q?: string }>
 }) {
   const products = await getProducts()
   const params = await searchParams
-  const initialFilters =
-    params.ready === '1' ? { readyOnly: true as const } : undefined
+  const initialFilters = {
+    ...(params.ready === '1' ? { readyOnly: true as const } : {}),
+    ...(params.q ? { query: params.q } : {}),
+  }
 
   return (
     <div className="space-y-6">

@@ -1,8 +1,39 @@
 import { FilterState, Product } from '@/types/products'
 import { hasStockInBranch } from '@/lib/stock'
 
+function normalizeSearchValue(value?: string): string {
+  return value?.toLowerCase().trim() ?? ''
+}
+
+function productMatchesQuery(product: Product, query: string): boolean {
+  const normalizedQuery = normalizeSearchValue(query)
+  if (!normalizedQuery) return true
+
+  const searchable = [
+    product.name,
+    product.model,
+    product.sku,
+    product.slug,
+    product.storage,
+    product.color,
+    product.specs,
+    product.description,
+    product.region,
+    product.condition,
+    product.unitType,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase()
+
+  return normalizedQuery
+    .split(/\s+/)
+    .every((term) => searchable.includes(term))
+}
+
 export function filterProducts(products: Product[], filters: FilterState): Product[] {
   return products.filter((product) => {
+    if (!productMatchesQuery(product, filters.query)) return false
     if (filters.model && product.model !== filters.model) return false
     if (filters.storage && product.storage !== filters.storage) return false
     if (filters.color && product.color !== filters.color) return false
@@ -50,6 +81,7 @@ export function sortProducts(products: Product[], sort: SortOption): Product[] {
 
 export function countActiveFilters(filters: FilterState): number {
   let count = 0
+  if (filters.query?.trim()) count++
   if (filters.model) count++
   if (filters.storage) count++
   if (filters.color) count++
@@ -75,6 +107,7 @@ export interface FilterChip {
 
 export function getActiveFilterChips(filters: FilterState): FilterChip[] {
   const chips: FilterChip[] = []
+  if (filters.query?.trim()) chips.push({ key: 'query', label: 'Cari', value: filters.query.trim() })
   if (filters.model) chips.push({ key: 'model', label: 'Model', value: filters.model })
   if (filters.storage) chips.push({ key: 'storage', label: 'Storage', value: filters.storage })
   if (filters.color) chips.push({ key: 'color', label: 'Warna', value: filters.color })
