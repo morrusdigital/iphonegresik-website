@@ -133,6 +133,11 @@ function mapStorefrontProduct(raw: StorefrontApiProduct): Product {
   }
 }
 
+/** Produk dengan harga 0 / belum diisi tidak ditampilkan di website. */
+function isSellable(product: Product): boolean {
+  return product.price > 0
+}
+
 async function getProductsFromStorefront(
   query?: Record<string, string | undefined>
 ): Promise<Product[]> {
@@ -141,7 +146,7 @@ async function getProductsFromStorefront(
     query
   )
 
-  return response.data.map(mapStorefrontProduct)
+  return response.data.map(mapStorefrontProduct).filter(isSellable)
 }
 
 export async function getProducts(): Promise<Product[]> {
@@ -169,7 +174,9 @@ export async function getProduct(slug: string): Promise<Product | undefined> {
       `/storefront/products/${encodeURIComponent(slug)}`
     )
 
-    return mapStorefrontProduct(response.data)
+    const product = mapStorefrontProduct(response.data)
+    // Produk tanpa harga (Rp 0) belum siap dijual, jadi diperlakukan seperti tidak ada.
+    return isSellable(product) ? product : undefined
   } catch (error) {
     if (error instanceof Error && error.message === 'NOT_FOUND') {
       return undefined

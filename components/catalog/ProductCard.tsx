@@ -7,6 +7,7 @@ import { formatPrice } from '@/lib/filters'
 import { hasStockInBranch } from '@/lib/stock'
 import ProductBadges from '@/components/catalog/ProductBadges'
 import ProductMetaRow from '@/components/catalog/ProductMetaRow'
+import { formatVariant } from '@/lib/product-meta'
 import { clsx } from 'clsx'
 import { BranchKey, Product } from '@/types/products'
 
@@ -52,26 +53,27 @@ export default function ProductCard({ product, activeBranchKey }: ProductCardPro
         </div>
       </Link>
 
-      <div className="flex flex-1 flex-col p-5">
+      <div className="flex flex-1 flex-col p-3.5 sm:p-5">
         <Link href={`/produk/${product.slug}`} className="block">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-400">
-            {product.model}
-          </p>
-          <h3 className="mt-2 text-[20px] font-semibold leading-tight tracking-[-0.03em] text-gray-950">
+          {product.model.trim().toLowerCase() !== product.name.trim().toLowerCase() && (
+            <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-400">
+              {product.model}
+            </p>
+          )}
+          <h3 className="text-[17px] sm:text-[20px] font-semibold leading-tight tracking-[-0.03em] text-gray-950">
             {product.name}
           </h3>
-          <p className="mt-2 text-[13px] leading-6 text-gray-500">
-            {product.storage !== '-' ? `${product.storage} · ` : ''}
-            {product.color}
-          </p>
+          {formatVariant(product) && (
+            <p className="mt-2 text-[13px] leading-6 text-gray-500">{formatVariant(product)}</p>
+          )}
         </Link>
 
         <div className="mt-4">
-          <p className="text-[24px] font-semibold tracking-[-0.03em] text-gray-950">
+          <p className="whitespace-nowrap text-[17px] font-semibold tracking-[-0.03em] text-gray-950 sm:text-[24px]">
             {formatPrice(product.price)}
           </p>
           {(product.commercial.installmentAvailable || product.commercial.tradeInAvailable) && (
-            <p className="mt-2 text-[12px] text-gray-500">
+            <p className="mt-2 text-[11px] leading-5 text-gray-500 sm:text-[12px]">
               {product.commercial.installmentAvailable ? 'Cicilan tersedia' : ' '}
               {product.commercial.installmentAvailable && product.commercial.tradeInAvailable ? ' · ' : ''}
               {product.commercial.tradeInAvailable ? 'Trade-in tersedia' : ''}
@@ -79,7 +81,7 @@ export default function ProductCard({ product, activeBranchKey }: ProductCardPro
           )}
         </div>
 
-        <div className="mt-4 rounded-[20px] bg-[#f5f5f7] p-3">
+        <div className="mt-3 rounded-[20px] bg-[#f5f5f7] p-2.5 sm:mt-4 sm:p-3">
           <div className="flex flex-wrap gap-2">
             {branches.map((branchKey) => {
               const qty = product.stock[branchKey]
@@ -89,7 +91,7 @@ export default function ProductCard({ product, activeBranchKey }: ProductCardPro
                 <span
                   key={branchKey}
                   className={clsx(
-                    'inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold',
+                    'inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-semibold sm:px-3 sm:text-[11px]',
                     inStock ? 'bg-white text-gray-900' : 'bg-gray-200 text-gray-500'
                   )}
                 >
@@ -99,22 +101,24 @@ export default function ProductCard({ product, activeBranchKey }: ProductCardPro
             })}
           </div>
 
-          <div className="mt-3">
+          {/* Detail garansi & kelengkapan disembunyikan di HP agar kartu tidak terlalu panjang; tetap ada di halaman detail. */}
+          <div className="mt-3 hidden sm:block">
             <ProductMetaRow product={product} compact />
           </div>
         </div>
 
         <div className="flex-1" />
 
-        <div className="mt-5 flex flex-col gap-2">
+        <div className="mt-4 flex flex-col gap-2 sm:mt-5">
           <Link
             href={`/produk/${product.slug}`}
-            className="inline-flex w-full items-center justify-center rounded-full bg-[#0071e3] px-4 py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#005ecb]"
+            className="inline-flex w-full items-center justify-center whitespace-nowrap rounded-full bg-[#0071e3] px-3 py-2.5 text-[12px] font-semibold text-white transition-colors hover:bg-[#005ecb] sm:px-4 sm:py-3 sm:text-[13px]"
           >
-            Cek detail produk
+            <span className="sm:hidden">Lihat detail</span>
+            <span className="hidden sm:inline">Cek detail produk</span>
           </Link>
 
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="grid gap-2">
             {availableBranches.length > 0 ? (
               availableBranches.map((branchKey) => {
                 const link = getProductWALink(product, branchKey, 'buy')
@@ -124,7 +128,7 @@ export default function ProductCard({ product, activeBranchKey }: ProductCardPro
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center rounded-full border border-gray-300 px-4 py-2.5 text-[12px] font-semibold text-gray-900 transition-colors hover:bg-gray-50"
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-gray-300 px-3 py-2 text-[11px] font-semibold text-gray-900 transition-colors hover:bg-gray-50 sm:px-4 sm:py-2.5 sm:text-[12px]"
                   >
                     Pesan via {branchLabels[branchKey]}
                   </a>
@@ -135,7 +139,7 @@ export default function ProductCard({ product, activeBranchKey }: ProductCardPro
                 href={getProductWALink(product, primaryBranch ?? 'gresik', 'general').url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-full border border-gray-300 px-4 py-2.5 text-[12px] font-semibold text-gray-900 transition-colors hover:bg-gray-50 sm:col-span-2"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-gray-300 px-3 py-2 text-[11px] font-semibold text-gray-900 transition-colors hover:bg-gray-50 sm:px-4 sm:py-2.5 sm:text-[12px]"
               >
                 Tanya ketersediaan
               </a>

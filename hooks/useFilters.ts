@@ -8,6 +8,7 @@ import {
   hasActiveFilters,
   getActiveFilterChips,
   SortOption,
+  DEFAULT_SORT,
 } from '@/lib/filters'
 import { buildFilterOptions } from '@/lib/products/filter-options'
 import { DEFAULT_FILTER_STATE, FilterState, Product } from '@/types/products'
@@ -36,7 +37,7 @@ interface UseFiltersReturn {
 
 export function useFilters({
   initialProducts,
-  initialSort = 'harga-asc',
+  initialSort = DEFAULT_SORT,
   initialFilters,
 }: UseFiltersOptions): UseFiltersReturn {
   const [filters, setFilters] = useState<FilterState>({

@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { hasDisplayValue } from '@/lib/product-meta'
 import type { Product } from '@/types/products'
 
 interface HeroPhoneVisualProps {
@@ -8,7 +9,9 @@ interface HeroPhoneVisualProps {
 }
 
 export default function HeroPhoneVisual({ product }: HeroPhoneVisualProps) {
-  const productLabel = product ? `${product.name} · ${product.storage}` : 'Sinkron stok · Gresik & Tuban'
+  const productLabel = product
+    ? [product.name, hasDisplayValue(product.storage) ? product.storage : null].filter(Boolean).join(' · ')
+    : 'Sinkron stok · Gresik & Tuban'
 
   return (
     <div className="relative overflow-hidden bg-[#f5f5f7] px-6 py-10 sm:px-8 lg:px-10 lg:py-12">
