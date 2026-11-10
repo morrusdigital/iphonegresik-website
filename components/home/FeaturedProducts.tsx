@@ -4,9 +4,11 @@ import type { Product } from '@/types/products'
 
 interface FeaturedProductsProps {
   products: Product[]
+  /** true bila produk dipilih manual (label "terlaris"); false bila dipilih otomatis dari stok. */
+  isManualPick?: boolean
 }
 
-export default function FeaturedProducts({ products }: FeaturedProductsProps) {
+export default function FeaturedProducts({ products, isManualPick = true }: FeaturedProductsProps) {
   if (products.length === 0) return null
 
   return (
@@ -15,10 +17,12 @@ export default function FeaturedProducts({ products }: FeaturedProductsProps) {
         <div>
           <span className="section-eyebrow">Siap dipesan sekarang</span>
           <h2 className="section-title mt-4 text-[2rem] font-bold leading-none sm:text-[2.5rem]">
-            Produk favorit pilihan customer
+            {isManualPick ? 'Produk favorit pilihan customer' : 'iPhone ready stock pilihan'}
           </h2>
           <p className="section-copy mt-3 max-w-2xl text-[14px] leading-7">
-            Unit yang paling sering ditanyakan dan paling cepat dibeli. Cocok untuk Anda yang ingin langsung fokus ke produk paling laris.
+            {isManualPick
+              ? 'Unit yang paling sering ditanyakan dan paling cepat dibeli. Cocok untuk Anda yang ingin langsung fokus ke produk paling laris.'
+              : 'Unit yang ready di cabang dengan foto unit asli. Cek detailnya, lalu pesan langsung lewat admin cabang terdekat.'}
           </p>
         </div>
         <Link

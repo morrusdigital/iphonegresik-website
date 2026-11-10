@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import type { Product, Category, BranchKey, FilterState } from '@/types/products'
+import type { Product, Category, FilterState } from '@/types/products'
 import { useFilters } from '@/hooks/useFilters'
-import { useBranch } from '@/hooks/useBranch'
 import ProductCard from '@/components/catalog/ProductCard'
 import FilterPanel from '@/components/catalog/FilterPanel'
 import FilterChips from '@/components/catalog/FilterChips'
 import CategoryTabs from '@/components/ui/CategoryTabs'
 import BranchDropdown from '@/components/ui/BranchDropdown'
+import { BRANCHES } from '@/data/branches'
 import { clsx } from 'clsx'
 
 interface ProductGridProps {
@@ -42,10 +42,6 @@ export default function ProductGrid({
 
   const activeCategory = navigateByCategory ? initialCategory : localCategory
 
-  const { activeBranchKey, branches, setBranch } = useBranch(
-    (initialFilters?.branch as BranchKey) || 'gresik'
-  )
-
   const productsByCategory =
     activeCategory === 'semua'
       ? initialProducts
@@ -66,20 +62,6 @@ export default function ProductGrid({
     activeFilterCount,
   } = useFilters({ initialProducts: productsByCategory, initialFilters })
 
-  // Sinkron cabang dropdown ↔ filter cabang
-  useEffect(() => {
-    if (filters.branch && filters.branch !== activeBranchKey) {
-      setBranch(filters.branch)
-    }
-  }, [filters.branch, activeBranchKey, setBranch])
-
-  const handleBranchSelect = (key: BranchKey) => {
-    setBranch(key)
-    setFilter('branch', key)
-  }
-
-  const displayBranchKey = filters.branch || activeBranchKey
-
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -95,10 +77,12 @@ export default function ProductGrid({
             setLocalCategory(cat)
           }}
         />
+        {/* Satu-satunya pilihan cabang di katalog; terhubung langsung ke filter cabang. */}
         <BranchDropdown
-          branches={branches}
-          activeBranchKey={displayBranchKey as BranchKey}
-          onSelect={handleBranchSelect}
+          branches={BRANCHES}
+          activeBranchKey={filters.branch}
+          onSelect={(key) => setFilter('branch', key)}
+          includeAll
         />
       </div>
 
@@ -184,7 +168,7 @@ export default function ProductGrid({
                 <ProductCard
                   key={product.id}
                   product={product}
-                  activeBranchKey={filters.branch || activeBranchKey}
+                  activeBranchKey={filters.branch || undefined}
                 />
               ))}
             </div>

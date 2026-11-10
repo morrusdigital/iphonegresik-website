@@ -1,4 +1,4 @@
-import { slugToSku } from '@/lib/product-meta'
+import { formatVariant, slugToSku } from '@/lib/product-meta'
 import { getTotalStock } from '@/lib/stock'
 import type {
   Category,
@@ -13,15 +13,14 @@ import type {
   UnitType,
 } from '@/types/products'
 
-const UNSPLASH_IMAGES: Record<Category, string> = {
-  iphone:
-    'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=1200&q=80',
-  ipad:
-    'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=1200&q=80',
-  macbook:
-    'https://images.unsplash.com/photo-1517336714739-489689fd1ca8?auto=format&fit=crop&w=1200&q=80',
-  accessories:
-    'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1200&q=80',
+/** Dipakai bila produk belum punya foto asli dari POS. */
+export const PLACEHOLDER_IMAGE = '/images/product-placeholder.svg'
+
+/** Harga minimum (Rupiah) agar label "Cicilan tersedia" ditampilkan. */
+export const INSTALLMENT_MIN_PRICE = 500_000
+
+export function hasRealPhoto(product: Pick<Product, 'image'>): boolean {
+  return Boolean(product.image) && product.image !== PLACEHOLDER_IMAGE
 }
 
 export type ProductSeed = {
@@ -78,10 +77,15 @@ function defaultCompleteness(condition: Condition, unitType: UnitType): ProductC
   return { type: 'box', minusNote: 'Cek kelengkapan saat chat' }
 }
 
-function defaultCommercial(condition: Condition): ProductCommercial {
+function defaultCommercial(
+  category: Category,
+  condition: Condition,
+  price: number
+): ProductCommercial {
   return {
-    tradeInAvailable: condition === 'baru',
-    installmentAvailable: true,
+    // Trade-in hanya untuk perangkat (iPhone/iPad/Mac) baru, bukan aksesoris.
+    tradeInAvailable: condition === 'baru' && category !== 'accessories',
+    installmentAvailable: price >= INSTALLMENT_MIN_PRICE,
     promoLabel: undefined,
   }
 }
@@ -89,15 +93,21 @@ function defaultCommercial(condition: Condition): ProductCommercial {
 export function enrichProduct(seed: ProductSeed): Product {
   const unitType: UnitType =
     seed.unitType ?? (seed.condition === 'baru' ? 'baru' : 'second')
-  const image = UNSPLASH_IMAGES[seed.category]
+  const image = PLACEHOLDER_IMAGE
   const totalStock = getTotalStock(seed.stock)
   const badges: ProductBadge[] = [...(seed.badges ?? [])]
-  if (totalStock > 0 && totalStock <= 3 && !badges.includes('stok-menipis')) {
+  // Unit second memang selalu 1 unit, jadi label "stok menipis" hanya bermakna untuk unit baru.
+  if (
+    seed.condition === 'baru' &&
+    totalStock > 0 &&
+    totalStock <= 3 &&
+    !badges.includes('stok-menipis')
+  ) {
     badges.push('stok-menipis')
   }
 
   const commercial: ProductCommercial = {
-    ...defaultCommercial(seed.condition),
+    ...defaultCommercial(seed.category, seed.condition, seed.price),
     ...seed.commercial,
   }
 
@@ -114,11 +124,11 @@ export function enrichProduct(seed: ProductSeed): Product {
     unitType,
     price: seed.price,
     image,
-    images: [image, image],
+    images: [image],
     specs: seed.specs,
     description:
       seed.description ??
-      `${seed.name} ${seed.storage !== '-' ? seed.storage + ' ' : ''}${seed.color} original dengan harga jelas dan layanan admin yang siap membantu pemesanan.`,
+      `${[seed.name, formatVariant(seed, ' ')].filter(Boolean).join(' ')} original dengan harga jelas dan layanan admin yang siap membantu pemesanan.`,
     stock: seed.stock,
     warranty: seed.warranty ?? defaultWarranty(seed.condition, unitType),
     region: seed.region ?? (seed.condition === 'baru' ? 'Indonesia (LL/A)' : undefined),
@@ -132,4 +142,3 @@ export function enrichProduct(seed: ProductSeed): Product {
   }
 }
 
-export { UNSPLASH_IMAGES }

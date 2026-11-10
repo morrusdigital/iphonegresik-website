@@ -1,6 +1,7 @@
 import { BRANCHES } from '@/data/branches'
 import { Branch, WhatsAppConfig, WhatsAppLink } from '@/types/branches'
 import { BranchKey, Product } from '@/types/products'
+import { formatVariant } from '@/lib/product-meta'
 
 export type WAIntent = 'buy' | 'trade-in' | 'video' | 'installment' | 'general'
 
@@ -18,7 +19,7 @@ export function buildWAMessage(
   intent: WAIntent
 ): string {
   const skuPart = product.sku ? ` (SKU: ${product.sku})` : ''
-  const base = `${product.name}${product.storage !== '-' ? ` ${product.storage}` : ''} ${product.color}${skuPart}`
+  const base = `${[product.name, formatVariant(product, ' ')].filter(Boolean).join(' ')}${skuPart}`
 
   switch (intent) {
     case 'buy':

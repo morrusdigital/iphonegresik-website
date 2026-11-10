@@ -73,3 +73,17 @@ export function slugToSku(slug: string): string {
     .replace(/-/g, '-')
     .slice(0, 24)
 }
+
+/** Nilai kosong dari POS (mis. "-") tidak perlu ditampilkan ke pengunjung. */
+export function hasDisplayValue(value?: string | null): value is string {
+  const trimmed = value?.trim()
+  return Boolean(trimmed) && trimmed !== '-'
+}
+
+/** "128GB · Black", tanpa bagian yang kosong / "-". */
+export function formatVariant(
+  product: Pick<Product, 'storage' | 'color'>,
+  separator = ' · '
+): string {
+  return [product.storage, product.color].filter(hasDisplayValue).join(separator)
+}

@@ -4,7 +4,7 @@ import type { SortOption } from '@/lib/filters'
 import { WARRANTY_LABELS, UNIT_TYPE_LABELS } from '@/lib/product-meta'
 import PriceRangeSlider from '@/components/ui/PriceRangeSlider'
 import { clsx } from 'clsx'
-import { FilterOptions, FilterState, BranchKey } from '@/types/products'
+import { FilterOptions, FilterState } from '@/types/products'
 
 interface FilterPanelProps {
   filters: FilterState
@@ -18,6 +18,7 @@ interface FilterPanelProps {
 }
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: 'terbaru', label: 'Terbaru' },
   { value: 'harga-asc', label: 'Harga: Termurah' },
   { value: 'harga-desc', label: 'Harga: Termahal' },
   { value: 'nama-asc', label: 'Nama: A–Z' },
@@ -110,27 +111,6 @@ export default function FilterPanel({
       </div>
 
       <hr className="border-gray-100" />
-
-      <div className="space-y-1.5">
-        <label className="text-xs font-medium text-gray-700">Cabang</label>
-        <div className="flex flex-wrap gap-2">
-          {(['', 'gresik', 'tuban'] as const).map((val) => (
-            <button
-              key={val || 'semua'}
-              type="button"
-              onClick={() => onFilterChange('branch', val as '' | BranchKey)}
-              className={clsx(
-                'rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors',
-                filters.branch === val
-                  ? 'border-gray-900 bg-gray-900 text-white'
-                  : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
-              )}
-            >
-              {val === '' ? 'Semua' : val === 'gresik' ? 'Gresik' : 'Tuban'}
-            </button>
-          ))}
-        </div>
-      </div>
 
       <label className="flex items-center gap-2 cursor-pointer">
         <input

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import ProductDetail from '@/components/catalog/ProductDetail'
 import { formatPrice } from '@/lib/filters'
+import { hasDisplayValue } from '@/lib/product-meta'
 import { getProduct, getRelatedProducts } from '@/lib/products/source'
 
 interface PageProps {
@@ -15,7 +16,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     title: `${product.name} ${product.storage !== '-' ? product.storage : ''} — ${formatPrice(product.price)}`,
-    description: `${product.name} ${product.color}. ${product.specs}. Stok Gresik & Tuban. Garansi jelas, chat admin untuk closing.`,
+    description: `${[product.name, hasDisplayValue(product.color) ? product.color : ''].filter(Boolean).join(' ')}. ${product.specs}. Stok Gresik & Tuban. Garansi jelas, chat admin untuk closing.`,
   }
 }
 

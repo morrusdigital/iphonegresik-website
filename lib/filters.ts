@@ -61,11 +61,28 @@ function hasAnyStockOther(product: Product, branch: FilterState['branch']): bool
   return product.stock[other] > 0
 }
 
-export type SortOption = 'harga-asc' | 'harga-desc' | 'nama-asc' | 'nama-desc'
+export type SortOption = 'terbaru' | 'harga-asc' | 'harga-desc' | 'nama-asc' | 'nama-desc'
+
+export const DEFAULT_SORT: SortOption = 'terbaru'
+
+/** Urutan kategori di katalog: produk utama (iPhone) tampil lebih dulu daripada aksesoris. */
+const CATEGORY_ORDER: Record<Product['category'], number> = {
+  iphone: 0,
+  ipad: 1,
+  macbook: 2,
+  accessories: 3,
+}
 
 export function sortProducts(products: Product[], sort: SortOption): Product[] {
   const sorted = [...products]
   switch (sort) {
+    case 'terbaru':
+      return sorted.sort(
+        (a, b) =>
+          CATEGORY_ORDER[a.category] - CATEGORY_ORDER[b.category] ||
+          (b.updatedAt ?? '').localeCompare(a.updatedAt ?? '') ||
+          b.price - a.price
+      )
     case 'harga-asc':
       return sorted.sort((a, b) => a.price - b.price)
     case 'harga-desc':

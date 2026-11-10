@@ -6,6 +6,7 @@ import NewArrivals from '@/components/home/NewArrivals'
 import CategoryHighlight from '@/components/home/CategoryHighlight'
 import TrustSection from '@/components/home/TrustSection'
 import { getProducts } from '@/lib/products/source'
+import { curateHome } from '@/lib/products/curation'
 
 export const metadata: Metadata = {
   title: 'iPhone Gresik — Produk Apple Original, Harga Jelas, Siap Dibantu Admin',
@@ -15,9 +16,8 @@ export const metadata: Metadata = {
 
 export default async function BerandaPage() {
   const products = await getProducts()
-  const featuredProducts = products.filter((product) => product.badges.includes('terlaris')).slice(0, 4)
-  const newArrivalProducts = products.filter((product) => product.badges.includes('baru-masuk')).slice(0, 4)
-  const heroProduct = featuredProducts[0] ?? products[0]
+  const { hero: heroProduct, featured: featuredProducts, featuredIsManual, newArrivals: newArrivalProducts } =
+    curateHome(products)
   const lastUpdate = products.reduce(
     (latest, product) => (product.updatedAt > latest ? product.updatedAt : latest),
     products[0]?.updatedAt ?? ''
@@ -25,9 +25,9 @@ export default async function BerandaPage() {
 
   return (
     <div className="home-stack">
-      <HeroBanner product={heroProduct} lastUpdate={lastUpdate} />
+      <HeroBanner product={heroProduct} lastUpdate={lastUpdate} isManualPick={featuredIsManual} />
       <MarqueeStrip products={products} />
-      <FeaturedProducts products={featuredProducts} />
+      <FeaturedProducts products={featuredProducts} isManualPick={featuredIsManual} />
       <NewArrivals products={newArrivalProducts} />
       <CategoryHighlight products={products} />
       <TrustSection />

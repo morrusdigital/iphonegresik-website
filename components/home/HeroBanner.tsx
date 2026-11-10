@@ -1,25 +1,30 @@
 import Link from 'next/link'
 import { formatDateLabel, formatPrice } from '@/lib/filters'
 import HeroPhoneVisual from '@/components/home/HeroPhoneVisual'
+import { formatVariant } from '@/lib/product-meta'
 import type { Product } from '@/types/products'
 
 interface HeroBannerProps {
   product?: Product
   lastUpdate?: string
+  /** true bila produk dipilih manual (label "terlaris"); false bila dipilih otomatis dari stok. */
+  isManualPick?: boolean
 }
 
-export default function HeroBanner({ product, lastUpdate }: HeroBannerProps) {
+export default function HeroBanner({ product, lastUpdate, isManualPick = true }: HeroBannerProps) {
   const headingPrimary = product?.model ?? 'Produk Apple original'
-  const headingSecondary = product?.color ?? 'siap mengikuti stok dari sistem'
+  const headingSecondary = product
+    ? formatVariant(product, ' ')
+    : 'siap mengikuti stok dari sistem'
 
   return (
     <section className="home-section bg-white">
       <div className="grid gap-0 lg:grid-cols-[minmax(0,1.02fr)_minmax(420px,.98fr)]">
         <div className="flex flex-col justify-center px-6 py-10 sm:px-8 lg:px-12 lg:py-14">
-          <span className="section-eyebrow">Pilihan paling dicari</span>
+          <span className="section-eyebrow">{isManualPick ? 'Pilihan paling dicari' : 'Ready stock hari ini'}</span>
           <h1 className="section-title mt-6 max-w-xl text-[2.7rem] font-bold leading-[0.95] sm:text-[4.2rem]">
             {headingPrimary}
-            <span className="block text-gray-500">{headingSecondary}</span>
+            {headingSecondary && <span className="block text-gray-500">{headingSecondary}</span>}
           </h1>
 
           <p className="mt-5 max-w-xl text-[15px] leading-8 text-gray-600 sm:text-[17px]">

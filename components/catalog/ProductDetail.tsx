@@ -5,9 +5,15 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { BRANCHES } from '@/data/branches'
 import { formatDateLabel, formatPrice } from '@/lib/filters'
-import { formatWarrantyShort, formatCompletenessShort, UNIT_TYPE_LABELS } from '@/lib/product-meta'
+import {
+  formatCompletenessShort,
+  formatVariant,
+  formatWarrantyShort,
+  UNIT_TYPE_LABELS,
+} from '@/lib/product-meta'
 import { getStockLabel, hasStockInBranch } from '@/lib/stock'
 import { getProductWALink } from '@/lib/whatsapp'
+import { hasRealPhoto } from '@/lib/products/enrich'
 import ProductBadges from '@/components/catalog/ProductBadges'
 import ProductCard from '@/components/catalog/ProductCard'
 import WhatsAppButton from '@/components/ui/WhatsAppButton'
@@ -30,6 +36,7 @@ export default function ProductDetail({
   const [zoomLevel, setZoomLevel] = useState(1)
 
   const activeImageSrc = product.images[activeImage] ?? product.image
+  const showPhoto = hasRealPhoto({ image: activeImageSrc })
   const activeImageDownloadUrl = getProductImageDownloadUrl(
     activeImageSrc,
     `${product.slug}-${activeImage + 1}`
@@ -77,9 +84,13 @@ export default function ProductDetail({
         <div className="space-y-3">
           <button
             type="button"
-            onClick={openZoom}
-            className="group relative aspect-square w-full overflow-hidden rounded-2xl bg-gradient-to-br from-[#f8faff] to-[#f0f4ff] text-left"
-            aria-label={`Perbesar gambar ${product.name}`}
+            onClick={showPhoto ? openZoom : undefined}
+            disabled={!showPhoto}
+            className={clsx(
+              'group relative aspect-square w-full overflow-hidden rounded-2xl text-left',
+              showPhoto ? 'bg-gradient-to-br from-[#f8faff] to-[#f0f4ff]' : 'cursor-default bg-[#f5f5f7]'
+            )}
+            aria-label={showPhoto ? `Perbesar gambar ${product.name}` : 'Foto produk segera tersedia'}
           >
             <Image
               src={activeImageSrc}
@@ -89,18 +100,22 @@ export default function ProductDetail({
               className="object-contain p-8 transition-transform duration-300 group-hover:scale-[1.03]"
               priority
             />
-            <span className="absolute bottom-4 right-4 rounded-lg bg-white/90 px-3 py-1.5 text-xs font-bold text-gray-800 shadow-sm ring-1 ring-gray-200 backdrop-blur">
-              Klik untuk zoom
-            </span>
+            {showPhoto && (
+              <span className="absolute bottom-4 right-4 rounded-lg bg-white/90 px-3 py-1.5 text-xs font-bold text-gray-800 shadow-sm ring-1 ring-gray-200 backdrop-blur">
+                Klik untuk zoom
+              </span>
+            )}
           </button>
-          <a
-            href={activeImageDownloadUrl}
-            className="inline-flex w-full items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-gray-800 transition-colors hover:bg-gray-50"
-          >
-            Unduh gambar
-          </a>
+          {showPhoto && (
+            <a
+              href={activeImageDownloadUrl}
+              className="inline-flex w-full items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-gray-800 transition-colors hover:bg-gray-50"
+            >
+              Unduh gambar
+            </a>
+          )}
           {product.images.length > 1 && (
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {product.images.map((img, i) => (
                 <button
                   key={i}
@@ -111,7 +126,7 @@ export default function ProductDetail({
                     activeImage === i ? 'border-blue-500' : 'border-gray-100'
                   )}
                 >
-                  <Image src={img} alt="" fill className="object-contain p-1" />
+                  <Image src={img} alt="" fill sizes="64px" className="object-contain p-1" />
                 </button>
               ))}
             </div>
@@ -123,8 +138,7 @@ export default function ProductDetail({
           <div>
             <h1 className="text-2xl font-black text-gray-950 tracking-tight">{product.name}</h1>
             <p className="text-sm text-gray-500 mt-1">
-              {product.storage !== '-' ? `${product.storage} · ` : ''}
-              {product.color} · SKU {product.sku}
+              {[formatVariant(product), `SKU ${product.sku}`].filter(Boolean).join(' · ')}
             </p>
           </div>
 
