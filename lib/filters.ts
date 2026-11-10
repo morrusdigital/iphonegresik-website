@@ -43,12 +43,11 @@ export function filterProducts(products: Product[], filters: FilterState): Produ
     if (filters.priceMin > 0 && product.price < filters.priceMin) return false
     if (filters.priceMax > 0 && product.price > filters.priceMax) return false
 
-    if (filters.readyOnly) {
-      if (filters.branch) {
-        if (!hasStockInBranch(product.stock, filters.branch)) return false
-      } else if (product.stock.gresik === 0 && product.stock.tuban === 0) {
-        return false
-      }
+    // Memilih cabang = hanya tampilkan produk yang ada stoknya di cabang itu.
+    if (filters.branch && !hasStockInBranch(product.stock, filters.branch)) return false
+
+    if (filters.readyOnly && product.stock.gresik === 0 && product.stock.tuban === 0) {
+      return false
     }
 
     return true

@@ -112,18 +112,6 @@ export default function FilterPanel({
 
       <hr className="border-gray-100" />
 
-      <label className="flex items-center gap-2 cursor-pointer">
-        <input
-          type="checkbox"
-          checked={filters.readyOnly}
-          onChange={(e) => onFilterChange('readyOnly', e.target.checked)}
-          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-        />
-        <span className="text-xs font-medium text-gray-700">Ready stock saja</span>
-      </label>
-
-      <hr className="border-gray-100" />
-
       <FilterSelect
         label="Model"
         value={filters.model}

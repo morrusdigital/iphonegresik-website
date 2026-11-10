@@ -3,9 +3,9 @@ import { formatPrice } from '@/lib/filters'
 import type { Category, Product } from '@/types/products'
 
 const CATEGORY_CARDS: { key: Category; label: string; href: string }[] = [
-  { key: 'macbook', label: 'Mac', href: '/kategori/mac' },
   { key: 'iphone', label: 'iPhone', href: '/kategori/iphone' },
   { key: 'ipad', label: 'iPad', href: '/kategori/ipad' },
+  { key: 'macbook', label: 'Mac', href: '/kategori/mac' },
   { key: 'accessories', label: 'Aksesoris', href: '/kategori/aksesoris' },
 ]
 const MIN_DISPLAYABLE_PRICE = 1_000

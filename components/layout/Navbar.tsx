@@ -5,14 +5,16 @@ import { useState } from 'react'
 import SiteLogo from '@/components/layout/SiteLogo'
 import { clsx } from 'clsx'
 
-const NAV_LINKS = [
-  { href: '/katalog', label: 'Semua Produk' },
+const CATALOG_LINK = { href: '/katalog', label: 'Semua Produk' }
+
+const CATEGORY_LINKS = [
   { href: '/kategori/iphone', label: 'iPhone' },
   { href: '/kategori/ipad', label: 'iPad' },
   { href: '/kategori/mac', label: 'Mac' },
-  { href: '/katalog?ready=1', label: 'Ready Stock' },
   { href: '/kategori/aksesoris', label: 'Aksesoris' },
 ]
+
+const MOBILE_LINKS = [CATALOG_LINK, ...CATEGORY_LINKS]
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -53,7 +55,7 @@ export default function Navbar() {
           </div>
 
           <nav className="hidden items-center gap-1 md:flex" aria-label="Navigasi utama">
-            {NAV_LINKS.map((link) => (
+            {CATEGORY_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -68,27 +70,13 @@ export default function Navbar() {
             <SiteLogo />
           </div>
 
-          <div className="flex min-w-[44px] justify-end md:min-w-[180px] md:items-center md:gap-3">
+          {/* Satu tombol utama ke katalog. Di HP, katalog ada di menu, jadi sisi kanan hanya penyeimbang logo. */}
+          <div className="flex min-w-[44px] justify-end md:min-w-[180px] md:items-center">
             <Link
-              href="/kategori/iphone"
-              className="hidden text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 lg:inline-flex"
-            >
-              Best Seller
-            </Link>
-            <Link
-              href="/katalog?ready=1"
+              href={CATALOG_LINK.href}
               className="hidden rounded-full bg-[#0071e3] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#005ecb] md:inline-flex"
             >
-              Ready Stock
-            </Link>
-            <Link
-              href="/katalog"
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 text-gray-700 transition-colors hover:bg-gray-50"
-              aria-label="Buka katalog"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.7} stroke="currentColor" className="h-5 w-5" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386a1.5 1.5 0 011.415 1.03L5.4 5.25m0 0h13.65a.75.75 0 01.73.917l-1.2 5.25a.75.75 0 01-.73.583H7.11a.75.75 0 01-.73-.583L5.4 5.25zM5.4 5.25L4.2 15a1.5 1.5 0 001.49 1.683h10.62M8.25 20.25a.75.75 0 100-1.5.75.75 0 000 1.5zm8.25 0a.75.75 0 100-1.5.75.75 0 000 1.5z" />
-              </svg>
+              {CATALOG_LINK.label}
             </Link>
           </div>
         </div>
@@ -100,7 +88,7 @@ export default function Navbar() {
           aria-label="Navigasi mobile"
         >
           <ul className="space-y-1">
-            {NAV_LINKS.map((link) => (
+            {MOBILE_LINKS.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}

@@ -12,10 +12,9 @@ const PRODUCT_LINKS = [
 ]
 
 const SERVICE_LINKS = [
-  { label: 'Ready Stock', href: '/katalog?ready=1' },
   { label: 'Semua Produk', href: '/katalog' },
-  { label: 'Cabang Gresik', href: getBranchWALink('gresik', 'general').url, external: true },
-  { label: 'Cabang Tuban', href: getBranchWALink('tuban', 'general').url, external: true },
+  { label: 'Chat WA Gresik', href: getBranchWALink('gresik', 'general').url, external: true },
+  { label: 'Chat WA Tuban', href: getBranchWALink('tuban', 'general').url, external: true },
 ]
 
 export default function Footer() {

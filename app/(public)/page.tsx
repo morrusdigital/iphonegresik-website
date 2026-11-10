@@ -3,7 +3,6 @@ import HeroBanner from '@/components/home/HeroBanner'
 import MarqueeStrip from '@/components/home/Marqueestrip'
 import FeaturedProducts from '@/components/home/FeaturedProducts'
 import NewArrivals from '@/components/home/NewArrivals'
-import CategoryHighlight from '@/components/home/CategoryHighlight'
 import TrustSection from '@/components/home/TrustSection'
 import { getProducts } from '@/lib/products/source'
 import { curateHome } from '@/lib/products/curation'
@@ -29,7 +28,6 @@ export default async function BerandaPage() {
       <MarqueeStrip products={products} />
       <FeaturedProducts products={featuredProducts} isManualPick={featuredIsManual} />
       <NewArrivals products={newArrivalProducts} />
-      <CategoryHighlight products={products} />
       <TrustSection />
     </div>
   )

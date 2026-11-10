@@ -83,7 +83,7 @@ export default function TrustSection() {
           Lanjutkan ke katalog untuk lihat pilihan produk, harga, dan cabang yang paling pas untuk Anda.
         </p>
         <Link
-          href="/katalog?ready=1"
+          href="/katalog"
           className="mt-5 inline-flex rounded-full bg-[#0071e3] px-6 py-3 text-[13px] font-semibold text-white transition-colors hover:bg-[#005ecb]"
         >
           Buka katalog sekarang
