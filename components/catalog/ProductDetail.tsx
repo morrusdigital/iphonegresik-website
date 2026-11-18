@@ -16,6 +16,7 @@ import { getProductWALink } from '@/lib/whatsapp'
 import { hasRealPhoto } from '@/lib/products/enrich'
 import ProductBadges from '@/components/catalog/ProductBadges'
 import ProductCard from '@/components/catalog/ProductCard'
+import ProductImage from '@/components/catalog/ProductImage'
 import WhatsAppButton from '@/components/ui/WhatsAppButton'
 import type { BranchKey, Product } from '@/types/products'
 import { clsx } from 'clsx'
@@ -30,7 +31,12 @@ export default function ProductDetail({
   similarProducts = [],
 }: ProductDetailProps) {
   const [activeImage, setActiveImage] = useState(0)
-  const [branchKey, setBranchKey] = useState<BranchKey>('gresik')
+  // Pilih otomatis cabang yang punya stok; Gresik bila stok ada di keduanya atau di tidak satu pun.
+  const [branchKey, setBranchKey] = useState<BranchKey>(() =>
+    !hasStockInBranch(product.stock, 'gresik') && hasStockInBranch(product.stock, 'tuban')
+      ? 'tuban'
+      : 'gresik'
+  )
   const [openFaq, setOpenFaq] = useState<number | null>(0)
   const [isZoomOpen, setIsZoomOpen] = useState(false)
   const [zoomLevel, setZoomLevel] = useState(1)
@@ -87,17 +93,16 @@ export default function ProductDetail({
             onClick={showPhoto ? openZoom : undefined}
             disabled={!showPhoto}
             className={clsx(
-              'group relative aspect-square w-full overflow-hidden rounded-2xl text-left',
-              showPhoto ? 'bg-gradient-to-br from-[#f8faff] to-[#f0f4ff]' : 'cursor-default bg-[#f5f5f7]'
+              'group relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-[#f5f5f7] text-left',
+              !showPhoto && 'cursor-default'
             )}
             aria-label={showPhoto ? `Perbesar gambar ${product.name}` : 'Foto produk segera tersedia'}
           >
-            <Image
+            <ProductImage
               src={activeImageSrc}
               alt={product.name}
-              fill
               sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-contain p-8 transition-transform duration-300 group-hover:scale-[1.03]"
+              className="transition-transform duration-300 group-hover:scale-[1.03]"
               priority
             />
             {showPhoto && (
@@ -124,11 +129,11 @@ export default function ProductDetail({
                   aria-label={`Lihat foto ${i + 1} dari ${product.images.length}`}
                   aria-pressed={activeImage === i}
                   className={clsx(
-                    'relative h-16 w-16 rounded-lg overflow-hidden border-2',
+                    'relative h-20 w-16 rounded-lg overflow-hidden border-2 bg-[#f5f5f7]',
                     activeImage === i ? 'border-blue-500' : 'border-gray-100'
                   )}
                 >
-                  <Image src={img} alt="" fill sizes="64px" className="object-contain p-1" />
+                  <Image src={img} alt="" fill sizes="64px" className="object-cover" />
                 </button>
               ))}
             </div>

@@ -1,12 +1,12 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { getProductWALink } from '@/lib/whatsapp'
 import { formatPrice } from '@/lib/filters'
 import { hasStockInBranch } from '@/lib/stock'
 import ProductBadges from '@/components/catalog/ProductBadges'
 import ProductMetaRow from '@/components/catalog/ProductMetaRow'
+import ProductImage from '@/components/catalog/ProductImage'
 import { formatVariant } from '@/lib/product-meta'
 import { clsx } from 'clsx'
 import { BranchKey, Product } from '@/types/products'
@@ -32,16 +32,13 @@ export default function ProductCard({ product, activeBranchKey }: ProductCardPro
     >
       <Link
         href={`/produk/${product.slug}`}
-        className="relative block aspect-square overflow-hidden bg-[#f5f5f7]"
+        className="relative block aspect-[4/5] overflow-hidden bg-[#f5f5f7]"
       >
-        <Image
+        <ProductImage
           src={product.image}
           alt={product.name}
-          fill
           sizes="(max-width:640px) 50vw,(max-width:1024px) 33vw,25vw"
-          className="object-contain p-6 transition-transform duration-300 group-hover:scale-[1.03]"
-          placeholder="blur"
-          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+          className="transition-transform duration-300 group-hover:scale-[1.03]"
         />
         <div className="absolute left-4 top-4 right-4 flex items-start justify-between gap-2">
           <ProductBadges badges={product.badges} />
