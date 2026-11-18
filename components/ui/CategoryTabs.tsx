@@ -2,10 +2,11 @@
 
 import type { Category } from '@/types/products'
 import { clsx } from 'clsx'
+import { isCategoryVisible } from '@/lib/products/visibility'
 
 // ============================================================
 // CategoryTabs
-// Tab navigasi kategori: Semua / iPhone / iPad / Mac / Aksesoris
+// Tab navigasi kategori: Semua + kategori yang tidak disembunyikan
 // ============================================================
 
 interface CategoryTab {
@@ -13,13 +14,15 @@ interface CategoryTab {
   label: string
 }
 
-const TABS: CategoryTab[] = [
-  { key: 'semua',     label: 'Semua' },
-  { key: 'iphone',   label: 'iPhone' },
-  { key: 'ipad',     label: 'iPad' },
-  { key: 'macbook',      label: 'Mac' },
-  { key: 'accessories', label: 'Aksesoris' },
-]
+const TABS: CategoryTab[] = (
+  [
+    { key: 'semua',     label: 'Semua' },
+    { key: 'iphone',   label: 'iPhone' },
+    { key: 'ipad',     label: 'iPad' },
+    { key: 'macbook',      label: 'Mac' },
+    { key: 'accessories', label: 'Aksesoris' },
+  ] satisfies CategoryTab[]
+).filter((tab) => tab.key === 'semua' || isCategoryVisible(tab.key))
 
 interface CategoryTabsProps {
   activeCategory: Category | 'semua'

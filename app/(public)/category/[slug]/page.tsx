@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getProductsForCategory } from '@/lib/products/source'
+import { isCategoryVisible } from '@/lib/products/visibility'
 import type { Category } from '@/types/products'
 import ProductGrid from '@/components/catalog/ProductGrid'
 
@@ -44,7 +45,9 @@ const SLUG_TO_CATEGORY: Record<string, Category> = {
 }
 
 function resolveCategoryFromSlug(slug: string): Category | null {
-  return SLUG_TO_CATEGORY[slug] ?? null
+  const category = SLUG_TO_CATEGORY[slug] ?? null
+  // Kategori tersembunyi diperlakukan seperti tidak ada (404).
+  return category && isCategoryVisible(category) ? category : null
 }
 
 // ============================================================

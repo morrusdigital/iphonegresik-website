@@ -4,15 +4,19 @@ import Link from 'next/link'
 import { useState } from 'react'
 import SiteLogo from '@/components/layout/SiteLogo'
 import { clsx } from 'clsx'
+import { isCategoryVisible } from '@/lib/products/visibility'
+import type { Category } from '@/types/products'
 
 const CATALOG_LINK = { href: '/katalog', label: 'Semua Produk' }
 
-const CATEGORY_LINKS = [
-  { href: '/kategori/iphone', label: 'iPhone' },
-  { href: '/kategori/ipad', label: 'iPad' },
-  { href: '/kategori/mac', label: 'Mac' },
-  { href: '/kategori/aksesoris', label: 'Aksesoris' },
-]
+const CATEGORY_LINKS = (
+  [
+    { category: 'iphone', href: '/kategori/iphone', label: 'iPhone' },
+    { category: 'ipad', href: '/kategori/ipad', label: 'iPad' },
+    { category: 'macbook', href: '/kategori/mac', label: 'Mac' },
+    { category: 'accessories', href: '/kategori/aksesoris', label: 'Aksesoris' },
+  ] satisfies { category: Category; href: string; label: string }[]
+).filter((link) => isCategoryVisible(link.category))
 
 const MOBILE_LINKS = [CATALOG_LINK, ...CATEGORY_LINKS]
 

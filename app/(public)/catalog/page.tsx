@@ -5,7 +5,7 @@ import { getProducts } from '@/lib/products/source'
 export const metadata: Metadata = {
   title: 'Katalog Produk',
   description:
-    'Katalog lengkap iPhone, iPad, Mac, dan Aksesoris Apple original. Cari produk, filter cabang, ready stock, garansi, dan harga.',
+    'Katalog lengkap iPhone, iPad, dan Mac original. Cari produk, filter cabang, ready stock, garansi, dan harga.',
 }
 
 export default async function KatalogPage({

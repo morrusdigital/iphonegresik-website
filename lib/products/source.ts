@@ -4,6 +4,7 @@ import { PRODUCTS, getProductBySlug, getProductsByCategory } from '@/data/produc
 import { getProductMarketingOverride } from '@/data/product-marketing'
 import { buildFilterOptions } from '@/lib/products/filter-options'
 import { enrichProduct, type ProductSeed } from '@/lib/products/enrich'
+import { isCategoryVisible } from '@/lib/products/visibility'
 import type { Category, FilterOptions, Product } from '@/types/products'
 import type {
   StorefrontApiProduct,
@@ -149,7 +150,7 @@ async function getProductsFromStorefront(
   return response.data.map(mapStorefrontProduct).filter(isSellable)
 }
 
-export async function getProducts(): Promise<Product[]> {
+async function loadProducts(): Promise<Product[]> {
   if (!hasStorefrontConfig()) {
     warnMissingStorefrontConfig()
     return PRODUCTS
@@ -163,7 +164,7 @@ export async function getProducts(): Promise<Product[]> {
   }
 }
 
-export async function getProduct(slug: string): Promise<Product | undefined> {
+async function loadProduct(slug: string): Promise<Product | undefined> {
   if (!hasStorefrontConfig()) {
     warnMissingStorefrontConfig()
     return getProductBySlug(slug)
@@ -187,7 +188,7 @@ export async function getProduct(slug: string): Promise<Product | undefined> {
   }
 }
 
-export async function getProductsForCategory(category: Category): Promise<Product[]> {
+async function loadProductsForCategory(category: Category): Promise<Product[]> {
   if (!hasStorefrontConfig()) {
     warnMissingStorefrontConfig()
     return getProductsByCategory(category)
@@ -199,6 +200,29 @@ export async function getProductsForCategory(category: Category): Promise<Produc
     warnStorefrontUnavailable(error)
     return getProductsByCategory(category)
   }
+}
+
+// ============================================================
+// API publik — semua halaman lewat sini, jadi kategori tersembunyi
+// (lihat lib/products/visibility.ts) tidak pernah sampai ke pengunjung.
+// ============================================================
+
+function isPublic(product: Product): boolean {
+  return isCategoryVisible(product.category)
+}
+
+export async function getProducts(): Promise<Product[]> {
+  return (await loadProducts()).filter(isPublic)
+}
+
+export async function getProduct(slug: string): Promise<Product | undefined> {
+  const product = await loadProduct(slug)
+  return product && isPublic(product) ? product : undefined
+}
+
+export async function getProductsForCategory(category: Category): Promise<Product[]> {
+  if (!isCategoryVisible(category)) return []
+  return (await loadProductsForCategory(category)).filter(isPublic)
 }
 
 export async function getRelatedProducts(
@@ -217,11 +241,9 @@ export async function getRelatedProducts(
 }
 
 export function getProductsSync(): Product[] {
-  return PRODUCTS
+  return PRODUCTS.filter(isPublic)
 }
 
 export function getFilterOptionsSync(products?: Product[]): FilterOptions {
-  return buildFilterOptions(products ?? PRODUCTS)
+  return buildFilterOptions(products ?? getProductsSync())
 }
-
-export { getProductBySlug, getProductsByCategory }

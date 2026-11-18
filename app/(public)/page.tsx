@@ -10,7 +10,7 @@ import { curateHome } from '@/lib/products/curation'
 export const metadata: Metadata = {
   title: 'iPhone Gresik — Produk Apple Original, Harga Jelas, Siap Dibantu Admin',
   description:
-    'Temukan iPhone, iPad, Mac, dan aksesoris Apple original dengan harga jelas dan layanan cepat. Pilih produk, cek cabang, lalu lanjut chat admin untuk pemesanan.',
+    'Temukan iPhone, iPad, dan Mac original dengan harga jelas dan layanan cepat. Pilih produk, cek cabang, lalu lanjut chat admin untuk pemesanan.',
 }
 
 export default async function BerandaPage() {
