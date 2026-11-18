@@ -13,7 +13,6 @@ import type {
 
 const STOREFRONT_REVALIDATE_SECONDS = 60
 let hasWarnedMissingConfig = false
-let hasWarnedStorefrontUnavailable = false
 
 function hasStorefrontConfig(): boolean {
   return Boolean(process.env.LARAVEL_POS_API_URL && process.env.LARAVEL_POS_API_TOKEN)
@@ -27,13 +26,26 @@ function warnMissingStorefrontConfig() {
   )
 }
 
-function warnStorefrontUnavailable(error: unknown) {
-  if (hasWarnedStorefrontUnavailable) return
-  hasWarnedStorefrontUnavailable = true
-  console.warn(
-    'Storefront API tidak bisa diakses. Katalog sementara memakai data fallback statis.',
-    error
-  )
+/**
+ * Dilempar bila Storefront API sudah dikonfigurasi tapi gagal diakses (error jaringan, 5xx, 429, ...).
+ * Ditangkap oleh app/error.tsx, yang menampilkan pesan "katalog sedang diperbarui".
+ *
+ * Sengaja TIDAK jatuh ke data contoh (data/products.ts): itu produk & harga palsu yang tidak
+ * boleh terlihat pelanggan. Data contoh hanya dipakai saat API belum dikonfigurasi (pengembangan lokal).
+ * Di produksi, Next.js tetap menyajikan halaman/data cache terakhir yang berhasil selama API gangguan.
+ */
+export class StorefrontUnavailableError extends Error {
+  constructor(cause: unknown) {
+    super('Storefront API tidak bisa diakses', { cause })
+    this.name = 'StorefrontUnavailableError'
+  }
+}
+
+function storefrontUnavailable(error: unknown): StorefrontUnavailableError {
+  // Dicatat setiap kali (bukan sekali saja) supaya gangguan berulang tetap terlihat di log server.
+  const reason = error instanceof Error ? error.message : String(error)
+  console.error(`Storefront API tidak bisa diakses: ${reason}`)
+  return new StorefrontUnavailableError(error)
 }
 
 function getStorefrontBaseUrl(): string {
@@ -159,8 +171,7 @@ async function loadProducts(): Promise<Product[]> {
   try {
     return await getProductsFromStorefront()
   } catch (error) {
-    warnStorefrontUnavailable(error)
-    return PRODUCTS
+    throw storefrontUnavailable(error)
   }
 }
 
@@ -183,8 +194,7 @@ async function loadProduct(slug: string): Promise<Product | undefined> {
       return undefined
     }
 
-    warnStorefrontUnavailable(error)
-    return getProductBySlug(slug)
+    throw storefrontUnavailable(error)
   }
 }
 
@@ -197,8 +207,7 @@ async function loadProductsForCategory(category: Category): Promise<Product[]> {
   try {
     return await getProductsFromStorefront({ category })
   } catch (error) {
-    warnStorefrontUnavailable(error)
-    return getProductsByCategory(category)
+    throw storefrontUnavailable(error)
   }
 }
 
@@ -229,7 +238,13 @@ export async function getRelatedProducts(
   currentProduct: Product,
   limit = 4
 ): Promise<Product[]> {
-  const products = await getProductsForCategory(currentProduct.category)
+  let products: Product[]
+  try {
+    products = await getProductsForCategory(currentProduct.category)
+  } catch {
+    // "Produk serupa" hanya pelengkap: kalau gagal dimuat, halaman produk tetap tampil tanpanya.
+    return []
+  }
 
   return products
     .filter(
