@@ -121,6 +121,8 @@ export default function ProductDetail({
                   key={i}
                   type="button"
                   onClick={() => setActiveImage(i)}
+                  aria-label={`Lihat foto ${i + 1} dari ${product.images.length}`}
+                  aria-pressed={activeImage === i}
                   className={clsx(
                     'relative h-16 w-16 rounded-lg overflow-hidden border-2',
                     activeImage === i ? 'border-blue-500' : 'border-gray-100'

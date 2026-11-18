@@ -1,13 +1,16 @@
 import Link from 'next/link'
 import { formatPrice } from '@/lib/filters'
+import { isCategoryVisible } from '@/lib/products/visibility'
 import type { Category, Product } from '@/types/products'
 
-const CATEGORY_CARDS: { key: Category; label: string; href: string }[] = [
-  { key: 'macbook', label: 'Mac', href: '/kategori/mac' },
-  { key: 'iphone', label: 'iPhone', href: '/kategori/iphone' },
-  { key: 'ipad', label: 'iPad', href: '/kategori/ipad' },
-  { key: 'accessories', label: 'Aksesoris', href: '/kategori/aksesoris' },
-]
+const CATEGORY_CARDS = (
+  [
+    { key: 'iphone', label: 'iPhone', href: '/kategori/iphone' },
+    { key: 'ipad', label: 'iPad', href: '/kategori/ipad' },
+    { key: 'macbook', label: 'Mac', href: '/kategori/mac' },
+    { key: 'accessories', label: 'Aksesoris', href: '/kategori/aksesoris' },
+  ] satisfies { key: Category; label: string; href: string }[]
+).filter((card) => isCategoryVisible(card.key))
 const MIN_DISPLAYABLE_PRICE = 1_000
 
 interface MarqueeStripProps {
@@ -21,7 +24,13 @@ export default function MarqueeStrip({ products }: MarqueeStripProps) {
         Pilih produk Apple yang Anda cari.
       </h2>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div
+        className={
+          CATEGORY_CARDS.length === 3
+            ? 'mt-6 grid gap-4 sm:grid-cols-3'
+            : 'mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4'
+        }
+      >
         {CATEGORY_CARDS.map((item) => {
           const categoryProducts = products.filter((product) => product.category === item.key)
           const pricedProducts = categoryProducts.filter(

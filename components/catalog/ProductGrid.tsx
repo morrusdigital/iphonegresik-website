@@ -10,6 +10,7 @@ import FilterChips from '@/components/catalog/FilterChips'
 import CategoryTabs from '@/components/ui/CategoryTabs'
 import BranchDropdown from '@/components/ui/BranchDropdown'
 import { BRANCHES } from '@/data/branches'
+import { getBranchWALink } from '@/lib/whatsapp'
 import { clsx } from 'clsx'
 
 interface ProductGridProps {
@@ -172,6 +173,8 @@ export default function ProductGrid({
                 />
               ))}
             </div>
+          ) : totalAll === 0 ? (
+            <ComingSoonState />
           ) : (
             <EmptyState onReset={resetFilters} />
           )}
@@ -216,6 +219,31 @@ export default function ProductGrid({
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+/** Kategori yang memang belum ada produknya (mis. Mac): tawarkan chat admin, bukan "reset filter". */
+function ComingSoonState() {
+  return (
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 px-6 py-16 text-center">
+      <p className="text-sm font-medium text-gray-900">Produk di kategori ini segera hadir</p>
+      <p className="mt-1 max-w-sm text-xs leading-5 text-gray-500">
+        Stok sedang kosong di website. Tanya admin untuk unit yang bisa dipesan atau info stok terbaru.
+      </p>
+      <div className="mt-4 flex flex-wrap justify-center gap-2">
+        {BRANCHES.map((branch) => (
+          <a
+            key={branch.key}
+            href={getBranchWALink(branch.key, 'general').url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-lg bg-gray-900 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-gray-800"
+          >
+            Chat admin {branch.city}
+          </a>
+        ))}
+      </div>
     </div>
   )
 }

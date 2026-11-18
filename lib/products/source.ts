@@ -4,6 +4,7 @@ import { PRODUCTS, getProductBySlug, getProductsByCategory } from '@/data/produc
 import { getProductMarketingOverride } from '@/data/product-marketing'
 import { buildFilterOptions } from '@/lib/products/filter-options'
 import { enrichProduct, type ProductSeed } from '@/lib/products/enrich'
+import { isCategoryVisible } from '@/lib/products/visibility'
 import type { Category, FilterOptions, Product } from '@/types/products'
 import type {
   StorefrontApiProduct,
@@ -12,7 +13,6 @@ import type {
 
 const STOREFRONT_REVALIDATE_SECONDS = 60
 let hasWarnedMissingConfig = false
-let hasWarnedStorefrontUnavailable = false
 
 function hasStorefrontConfig(): boolean {
   return Boolean(process.env.LARAVEL_POS_API_URL && process.env.LARAVEL_POS_API_TOKEN)
@@ -26,13 +26,26 @@ function warnMissingStorefrontConfig() {
   )
 }
 
-function warnStorefrontUnavailable(error: unknown) {
-  if (hasWarnedStorefrontUnavailable) return
-  hasWarnedStorefrontUnavailable = true
-  console.warn(
-    'Storefront API tidak bisa diakses. Katalog sementara memakai data fallback statis.',
-    error
-  )
+/**
+ * Dilempar bila Storefront API sudah dikonfigurasi tapi gagal diakses (error jaringan, 5xx, 429, ...).
+ * Ditangkap oleh app/error.tsx, yang menampilkan pesan "katalog sedang diperbarui".
+ *
+ * Sengaja TIDAK jatuh ke data contoh (data/products.ts): itu produk & harga palsu yang tidak
+ * boleh terlihat pelanggan. Data contoh hanya dipakai saat API belum dikonfigurasi (pengembangan lokal).
+ * Di produksi, Next.js tetap menyajikan halaman/data cache terakhir yang berhasil selama API gangguan.
+ */
+export class StorefrontUnavailableError extends Error {
+  constructor(cause: unknown) {
+    super('Storefront API tidak bisa diakses', { cause })
+    this.name = 'StorefrontUnavailableError'
+  }
+}
+
+function storefrontUnavailable(error: unknown): StorefrontUnavailableError {
+  // Dicatat setiap kali (bukan sekali saja) supaya gangguan berulang tetap terlihat di log server.
+  const reason = error instanceof Error ? error.message : String(error)
+  console.error(`Storefront API tidak bisa diakses: ${reason}`)
+  return new StorefrontUnavailableError(error)
 }
 
 function getStorefrontBaseUrl(): string {
@@ -149,7 +162,7 @@ async function getProductsFromStorefront(
   return response.data.map(mapStorefrontProduct).filter(isSellable)
 }
 
-export async function getProducts(): Promise<Product[]> {
+async function loadProducts(): Promise<Product[]> {
   if (!hasStorefrontConfig()) {
     warnMissingStorefrontConfig()
     return PRODUCTS
@@ -158,12 +171,11 @@ export async function getProducts(): Promise<Product[]> {
   try {
     return await getProductsFromStorefront()
   } catch (error) {
-    warnStorefrontUnavailable(error)
-    return PRODUCTS
+    throw storefrontUnavailable(error)
   }
 }
 
-export async function getProduct(slug: string): Promise<Product | undefined> {
+async function loadProduct(slug: string): Promise<Product | undefined> {
   if (!hasStorefrontConfig()) {
     warnMissingStorefrontConfig()
     return getProductBySlug(slug)
@@ -182,12 +194,11 @@ export async function getProduct(slug: string): Promise<Product | undefined> {
       return undefined
     }
 
-    warnStorefrontUnavailable(error)
-    return getProductBySlug(slug)
+    throw storefrontUnavailable(error)
   }
 }
 
-export async function getProductsForCategory(category: Category): Promise<Product[]> {
+async function loadProductsForCategory(category: Category): Promise<Product[]> {
   if (!hasStorefrontConfig()) {
     warnMissingStorefrontConfig()
     return getProductsByCategory(category)
@@ -196,16 +207,44 @@ export async function getProductsForCategory(category: Category): Promise<Produc
   try {
     return await getProductsFromStorefront({ category })
   } catch (error) {
-    warnStorefrontUnavailable(error)
-    return getProductsByCategory(category)
+    throw storefrontUnavailable(error)
   }
+}
+
+// ============================================================
+// API publik — semua halaman lewat sini, jadi kategori tersembunyi
+// (lihat lib/products/visibility.ts) tidak pernah sampai ke pengunjung.
+// ============================================================
+
+function isPublic(product: Product): boolean {
+  return isCategoryVisible(product.category)
+}
+
+export async function getProducts(): Promise<Product[]> {
+  return (await loadProducts()).filter(isPublic)
+}
+
+export async function getProduct(slug: string): Promise<Product | undefined> {
+  const product = await loadProduct(slug)
+  return product && isPublic(product) ? product : undefined
+}
+
+export async function getProductsForCategory(category: Category): Promise<Product[]> {
+  if (!isCategoryVisible(category)) return []
+  return (await loadProductsForCategory(category)).filter(isPublic)
 }
 
 export async function getRelatedProducts(
   currentProduct: Product,
   limit = 4
 ): Promise<Product[]> {
-  const products = await getProductsForCategory(currentProduct.category)
+  let products: Product[]
+  try {
+    products = await getProductsForCategory(currentProduct.category)
+  } catch {
+    // "Produk serupa" hanya pelengkap: kalau gagal dimuat, halaman produk tetap tampil tanpanya.
+    return []
+  }
 
   return products
     .filter(
@@ -217,11 +256,9 @@ export async function getRelatedProducts(
 }
 
 export function getProductsSync(): Product[] {
-  return PRODUCTS
+  return PRODUCTS.filter(isPublic)
 }
 
 export function getFilterOptionsSync(products?: Product[]): FilterOptions {
-  return buildFilterOptions(products ?? PRODUCTS)
+  return buildFilterOptions(products ?? getProductsSync())
 }
-
-export { getProductBySlug, getProductsByCategory }

@@ -19,11 +19,11 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   title: {
-    default: 'iPhone Gresik — iPhone, iPad, Mac & Aksesoris Apple',
+    default: 'iPhone Gresik — iPhone, iPad & Mac Original',
     template: '%s | iPhone Gresik',
   },
   description:
-    'Beli iPhone, iPad, Mac, dan aksesoris Apple original dengan harga jelas, pilihan lengkap, dan layanan cepat. Tersedia untuk Gresik, Tuban, dan pengiriman luar kota.',
+    'Beli iPhone, iPad, dan Mac original dengan harga jelas, pilihan lengkap, dan layanan cepat. Tersedia untuk Gresik, Tuban, dan pengiriman luar kota.',
   keywords: ['iPhone', 'iPad', 'Mac', 'Apple', 'Gresik', 'Tuban', 'Ready Stock'],
   openGraph: {
     type: 'website',

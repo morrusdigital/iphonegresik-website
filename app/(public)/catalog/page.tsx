@@ -5,18 +5,18 @@ import { getProducts } from '@/lib/products/source'
 export const metadata: Metadata = {
   title: 'Katalog Produk',
   description:
-    'Katalog lengkap iPhone, iPad, Mac, dan Aksesoris Apple original. Cari produk, filter cabang, ready stock, garansi, dan harga.',
+    'Katalog lengkap iPhone, iPad, dan Mac original. Cari produk, filter cabang, ready stock, garansi, dan harga.',
 }
 
 export default async function KatalogPage({
   searchParams,
 }: {
+  // `?ready=1` dari link lama tetap diterima, tapi tidak perlu: API hanya mengirim produk yang ada stoknya.
   searchParams: Promise<{ ready?: string; q?: string }>
 }) {
   const products = await getProducts()
   const params = await searchParams
   const initialFilters = {
-    ...(params.ready === '1' ? { readyOnly: true as const } : {}),
     ...(params.q ? { query: params.q } : {}),
   }
 

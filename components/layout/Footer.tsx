@@ -3,19 +3,22 @@ import { BRANCHES } from '@/data/branches'
 import SiteLogo from '@/components/layout/SiteLogo'
 import { SITE_NAME } from '@/lib/brand'
 import { getBranchWALink } from '@/lib/whatsapp'
+import { isCategoryVisible } from '@/lib/products/visibility'
+import type { Category } from '@/types/products'
 
-const PRODUCT_LINKS = [
-  { label: 'iPhone', href: '/kategori/iphone' },
-  { label: 'iPad', href: '/kategori/ipad' },
-  { label: 'Mac', href: '/kategori/mac' },
-  { label: 'Aksesoris', href: '/kategori/aksesoris' },
-]
+const PRODUCT_LINKS = (
+  [
+    { category: 'iphone', label: 'iPhone', href: '/kategori/iphone' },
+    { category: 'ipad', label: 'iPad', href: '/kategori/ipad' },
+    { category: 'macbook', label: 'Mac', href: '/kategori/mac' },
+    { category: 'accessories', label: 'Aksesoris', href: '/kategori/aksesoris' },
+  ] satisfies { category: Category; label: string; href: string }[]
+).filter((link) => isCategoryVisible(link.category))
 
 const SERVICE_LINKS = [
-  { label: 'Ready Stock', href: '/katalog?ready=1' },
   { label: 'Semua Produk', href: '/katalog' },
-  { label: 'Cabang Gresik', href: getBranchWALink('gresik', 'general').url, external: true },
-  { label: 'Cabang Tuban', href: getBranchWALink('tuban', 'general').url, external: true },
+  { label: 'Chat WA Gresik', href: getBranchWALink('gresik', 'general').url, external: true },
+  { label: 'Chat WA Tuban', href: getBranchWALink('tuban', 'general').url, external: true },
 ]
 
 export default function Footer() {
@@ -28,7 +31,7 @@ export default function Footer() {
           <div className="space-y-4">
             <SiteLogo linked={false} />
             <p className="max-w-md text-[13px] leading-7 text-gray-500">
-              Tempat belanja iPhone, iPad, Mac, dan aksesoris Apple original dengan harga jelas, pilihan lengkap, dan layanan admin yang cepat membantu.
+              Tempat belanja iPhone, iPad, dan Mac original dengan harga jelas, pilihan lengkap, dan layanan admin yang cepat membantu.
             </p>
           </div>
 

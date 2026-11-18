@@ -3,7 +3,6 @@ import HeroBanner from '@/components/home/HeroBanner'
 import MarqueeStrip from '@/components/home/Marqueestrip'
 import FeaturedProducts from '@/components/home/FeaturedProducts'
 import NewArrivals from '@/components/home/NewArrivals'
-import CategoryHighlight from '@/components/home/CategoryHighlight'
 import TrustSection from '@/components/home/TrustSection'
 import { getProducts } from '@/lib/products/source'
 import { curateHome } from '@/lib/products/curation'
@@ -11,7 +10,7 @@ import { curateHome } from '@/lib/products/curation'
 export const metadata: Metadata = {
   title: 'iPhone Gresik — Produk Apple Original, Harga Jelas, Siap Dibantu Admin',
   description:
-    'Temukan iPhone, iPad, Mac, dan aksesoris Apple original dengan harga jelas dan layanan cepat. Pilih produk, cek cabang, lalu lanjut chat admin untuk pemesanan.',
+    'Temukan iPhone, iPad, dan Mac original dengan harga jelas dan layanan cepat. Pilih produk, cek cabang, lalu lanjut chat admin untuk pemesanan.',
 }
 
 export default async function BerandaPage() {
@@ -29,7 +28,6 @@ export default async function BerandaPage() {
       <MarqueeStrip products={products} />
       <FeaturedProducts products={featuredProducts} isManualPick={featuredIsManual} />
       <NewArrivals products={newArrivalProducts} />
-      <CategoryHighlight products={products} />
       <TrustSection />
     </div>
   )

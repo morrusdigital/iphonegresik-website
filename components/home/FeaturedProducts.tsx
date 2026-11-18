@@ -26,10 +26,10 @@ export default function FeaturedProducts({ products, isManualPick = true }: Feat
           </p>
         </div>
         <Link
-          href="/katalog?ready=1"
+          href="/kategori/iphone"
           className="inline-flex items-center gap-2 self-start rounded-full border border-black/8 bg-white px-4 py-2.5 text-[12px] font-bold text-gray-700 transition-all hover:-translate-y-0.5 hover:text-gray-950"
         >
-          Lihat semua ready stock
+          Lihat semua iPhone
           <span aria-hidden="true">{'->'}</span>
         </Link>
       </div>

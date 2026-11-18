@@ -43,10 +43,10 @@ export default function HeroBanner({ product, lastUpdate, isManualPick = true }:
               </Link>
             ) : null}
             <Link
-              href="/katalog?ready=1"
+              href="/katalog"
               className="hero-cta-secondary inline-flex items-center rounded-full border border-gray-300 bg-white px-6 py-3 text-[13px] font-semibold text-gray-900 transition-all hover:-translate-y-0.5"
             >
-              {product ? 'Lihat ready stock' : 'Buka katalog'}
+              {product ? 'Lihat semua produk' : 'Buka katalog'}
             </Link>
           </div>
 
